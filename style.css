@@ -1,0 +1,85 @@
+#sldshw{
+    width: 100%;
+    height: 500px;
+    user-select: none;
+}
+#sldshwImgCont{
+    position: absolute;
+    width: inherit;height: inherit;
+}
+#sldshwImgCont img{
+    position: absolute;
+    width: inherit;height: inherit;
+    object-fit: cover;
+    display: none;
+}
+#sldshwLRBtnCont{
+    position: absolute;
+    width: inherit;height: inherit;
+    display: flex;justify-content: space-between;align-items: center;
+    overflow: hidden;
+    pointer-events: none;
+}
+#sldshwLeftBtn{
+    height: 50px;width: 50px;border-radius: 25px;
+    display: flex;justify-content: center;align-items: center;
+    padding: 0px 0px;
+    position: relative;
+    right: 15px;
+    pointer-events: auto;
+}
+#sldshwRightBtn{
+    height: 50px;width: 50px;border-radius: 25px;
+    display: flex;justify-content: center;align-items: center;
+    padding: 0px 0px;
+    position: relative;
+    left: 15px;
+    pointer-events: auto;
+}
+#sldshwDotCont{
+    position: absolute;
+    width: inherit;
+    height: inherit;
+    display: flex;justify-content: center;align-items: end;
+    pointer-events: none;
+}
+.sldshwDot{
+    height: 15px;
+    width: 15px;
+    font-size: 15px;
+    margin: 5px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    pointer-events: auto;
+}
+#sldshwAPBtnCont{
+    position: absolute;
+    width: inherit;
+    height: inherit;
+    display: flex;justify-content: right;align-items: end;
+    pointer-events: none;
+}
+#sldshwAPBtn{
+    margin: 10px;
+    pointer-events: auto;
+}
+
+
+
+#siteName{
+    display: flex;flex-direction: column;align-items: center;font-size: 35px;font-weight: 600;text-align: center;margin: 30px 0px;
+    color: var(--color10);
+}
+
+
+
+#newsCardCont{display: flex;overflow-x: auto;}
+.rCard{
+    min-width: 350px;max-width: 350px;min-height: 200px;max-height: 200px;padding: 12px;margin-right: 10px;border-radius: 12px;
+    background: var(--color60Tint);background: linear-gradient(180deg, var(--color60Tint) 0%, var(--color60) 150%);cursor: pointer;
+    /*box-shadow: inset 0px 0px 5px #ffffff20;*/border: solid #ffffff40 2px;overflow: hidden;display: flex;flex-direction: column;
+}
+.rCardTtl{font-size: 18px;font-weight: 600;margin-bottom: 5px;}
+.rCardDate{font-size: 14px;color: var(--color30Shade);margin-bottom: 5px;}
+.rCardBody{height: 100%;width: 100%;overflow: hidden;color: var(--color30Shade);}
+.rCardBody img{width: inherit;height: inherit;object-fit: cover;border-radius: 8px;}

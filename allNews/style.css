@@ -1,0 +1,11 @@
+.NPBtnCont{
+    margin: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}.NPIter{
+    margin: 0px 10px;
+    color: var(--color10);
+    font-size: 20px;
+    font-weight: 600;
+}

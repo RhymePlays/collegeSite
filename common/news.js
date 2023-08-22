@@ -1,58 +1,56 @@
 /* -------------------------------------------------- *\
 |---         HELP RELATING THE Notice Box.          ---|
 
-ntcData = {
+newsData = {
     title: "",
     date: 0,
     body: "",
     images: ["URL", "URL"]
 }
-createNtc(navData)
+createNews(navData)
 
 ToDo: Expand images when clicked/tapped upon.
 ToDo: Create the "Share" area. (Below Images)
 ToDo: Implement something like **MarkDown** for innerText.
 
 \* -------------------------------------------------- */
-
-function createNtc(ntcData){
-    let ntcTtl = document.createElement("div");
+function createNews(ntcData){
+    let ntcTtl = ce("div");
     ntcTtl.style.fontSize = "20px";
     ntcTtl.style.fontWeight = "600";
     ntcTtl.innerText = ntcData.title;
     
-    let ntcdateBStr = document.createElement("b");
+    let ntcdateBStr = ce("b");
     ntcdateBStr.style.fontWeight = "600";
     ntcdateBStr.innerText = "Date: "
     
     let ntcDateObj = new Date(ntcData.date);
-    let ntcDate = document.createElement("div");
-    ntcDate.style.color = color30;
+    let ntcDate = ce("div");
+    ntcDate.style.color = color10Tint;
     ntcDate.style.fontSize = "14px";
     ntcDate.style.fontWeight = "400";
     ntcDate.style.marginTop = "8px";
     ntcDate.append(ntcdateBStr, `${ntcDateObj.getDate()}/${ntcDateObj.getMonth()}/${ntcDateObj.getFullYear()}`);
     
-    let ntcTop = document.createElement("div");
+    let ntcTop = ce("div");
     ntcTop.style.color = color10;
     ntcTop.style.padding = "12px";
     ntcTop.style.borderRadius = "18px 18px 0px 0px";
     ntcTop.style.backgroundColor = "#ffffff20";
-    ntcTop.style.fontFamily = "Montserrat";
     ntcTop.append(ntcTtl, ntcDate);
     
-    let ntcBodyTxt = document.createElement("div");
+    let ntcBodyTxt = ce("div");
     ntcBodyTxt.innerText = ntcData.body; //ToDo: MarkDown
 
-    let ntcImgSect = document.createElement("div");
+    let ntcImgSect = ce("div");
     if (typeof(ntcData.images) == "object"){
-        let ntcImgCont = document.createElement("div");
+        let ntcImgCont = ce("div");
         ntcImgCont.style.display = "flex";
         ntcImgCont.style.overflowX = "auto";
         ntcImgCont.style.marginTop = "8px";
 
         for (index in ntcData.images){
-            let ntcImg = document.createElement("div");
+            let ntcImg = ce("div");
             ntcImg.style.cursor = "pointer";
             ntcImg.style.minHeight = "140px";
             ntcImg.style.maxHeight = "140px";
@@ -77,7 +75,6 @@ function createNtc(ntcData){
         ntcImgSect.style.paddingTop = "8px";
         ntcImgSect.style.fontSize = "20px";
         ntcImgSect.style.fontWeight = "600";
-        ntcImgSect.style.fontFamily = "Montserrat";
         
         ntcImgSect.style.border = `3px solid ${color10}`;
         ntcImgSect.style.borderBottom = "0";
@@ -86,19 +83,17 @@ function createNtc(ntcData){
         ntcImgSect.append("Images", ntcImgCont);
     }
 
-    let ntcBody = document.createElement("div");
+    let ntcBody = ce("div");
     ntcBody.style.padding = "12px";
     ntcBody.append(ntcBodyTxt, ntcImgSect);
 
-    let ntcCont = document.createElement("div");
+    let ntcCont = ce("div");
     ntcCont.style.border = `solid ${color10} 2px`;
     ntcCont.style.boxShadow = `${color10}80 0px 0px 40px 5px, ${color10}40 0px 0px 20px 0px, inset 0px 0px 20px 0px ${color10}60`;
-    ntcCont.style.background = colorObjBG;
+    ntcCont.style.background = color60Tint;
     ntcCont.style.margin = "15px";
     ntcCont.style.borderRadius = "18px";
     ntcCont.append(ntcTop, ntcBody);
     
-    console.log(ntcCont);
-
     return ntcCont;
 }

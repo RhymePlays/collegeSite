@@ -1,3 +1,4 @@
+
 /* -------------------------------------------------- *\
 |---            Variables and Parameters            ---|
 
@@ -9,15 +10,71 @@ value for window.innerWidth goes below
 'mobileUiThreshold'.
 
 \* -------------------------------------------------- */
+var commonDBData = undefined;
 
 var mobileUiThreshold = 700;
+var siteName = "RhymePlays Academy Site Version 2";
 
 var color10 = "#ff4466";
-var color30 = "#ffaabb";
-var colorTxt = "#ffffff";
-var colorSubTxt = "#d5d5d5";
-var colorObjBG = "#202020";
-var colorAbsBG = "#151515";
+var color10Tint = "#ffaabb";
+var color30 = "#ffffff";
+var color30Shade = "#b5b5b5";
+var color60 = "#151515";
+var color60Tint = "#202020";
+var colorGreen = "#10f060"
+
+
+let commonCSSExtra = ce("style");
+commonCSSExtra.append(`
+    :root{
+        --color10: ${color10};
+        --color10Tint: ${color10Tint};
+        --color30: ${color30};
+        --color30Shade: ${color30Shade};
+        --color60: ${color60};
+        --color60Tint: ${color60Tint};
+        --colorGreen: ${colorGreen};
+        --mobileUiThreshold: ${mobileUiThreshold}px;
+    }
+`);document.head.append(commonCSSExtra);
+
+
+
+/* -------------------------------------------------- *\
+|---                    Firebase                    ---|
+\* -------------------------------------------------- */
+const firebaseConfig = {
+    apiKey: "AIzaSyA6imB2RfnEt33HwDM7bau_ENl2AqKvkZo",
+    authDomain: "collegewebsite-97395.firebaseapp.com",
+    projectId: "collegewebsite-97395",
+    storageBucket: "collegewebsite-97395.appspot.com",
+    messagingSenderId: "243874537979",
+    appId: "1:243874537979:web:d93808fb9fc3f7f57fab5e",
+    measurementId: "G-5XV400E00S"
+};
+const app = firebase.initializeApp(firebaseConfig);
+const analytics = firebase.analytics(app);
+const db = firebase.firestore();
+
+/* -------------------------------------------------- *\
+|---                      Random                    ---|
+\* -------------------------------------------------- */
+function ce(type, opts={}, children=[]){
+    let elem = document.createElement(type);
+    Object.assign(elem, opts);
+    for (index in children){elem.append(children[index]);}
+    return elem;
+}
+
+function matSym(id, opts={}){return ce("span", Object.assign(opts, {className: "material-symbols-outlined", innerText: id}))}
+
+let extraCommonCSS = ce("style");
+extraCommonCSS.append(`
+    @media only screen and (max-width: ${mobileUiThreshold}px){
+        #subNavImg{max-height: 150px;min-height: 150px;}#subNavTxt{font-size: 25px;}#subNavSubTxt{font-size: 18px;}
+    }
+`);
+document.head.append(extraCommonCSS);
 
 
 
@@ -32,7 +89,7 @@ navData = [
 
     {text: "Option Ni"},
     
-    {logo: true},
+    {logo: true, src: "/logo.png"},
 
     {
         text: "Option San",
@@ -58,22 +115,23 @@ navData = [
 createNav(navData)
 
 \* -------------------------------------------------- */
-
 function createNav(navData, forceMobile=false){
 
     if (forceMobile || window.innerWidth < mobileUiThreshold){        
-        clsSym = matSym("close");
-        clsSym.classList = "rNavBtn material-symbols-outlined"
-        clsSym.onclick = function(){drwr.style.display = "none";drwrBack.style.display = "none";navCont.style.height = "auto"}
-
-        drwrTop = document.createElement("div");
+        drwrTop = ce("div");
         drwrTop.id = "drwrTop";
-        drwrTop.append("Pages", clsSym)
+        drwrTop.append(
+            "Pages",
+            Object.assign(matSym("close"), {
+                classList: "rNavBtn material-symbols-outlined",
+                onclick: function(){drwr.style.display = "none";drwrBack.style.display = "none";navCont.style.height = "auto"},
+            })
+        )
         
-        drwrBody = document.createElement("div");
+        drwrBody = ce("div");
         drwrBody.id = "drwrBody";
 
-        let drwr = document.createElement("div");
+        let drwr = ce("div");
         drwr.id = "drwr";
         drwr.className = "frostFX";
         drwr.append(drwrTop, drwrBody)
@@ -81,7 +139,7 @@ function createNav(navData, forceMobile=false){
         for (index1 in navData){
             if (navData[index1].logo){}
             else{
-                let drwrOpts = document.createElement("span");
+                let drwrOpts = ce("span");
                 drwrOpts.className = "drwrOpts rNavBtn";
                 drwrOpts.append(navData[index1].text);
                 if (typeof(navData[index1].link)=='string'){
@@ -92,7 +150,7 @@ function createNav(navData, forceMobile=false){
 
                 if (typeof(navData[index1]["subOpts"]) == "object"){
                     for (index2 in navData[index1]["subOpts"]){
-                        let drwrSubOpts = document.createElement("span");
+                        let drwrSubOpts = ce("span");
                         drwrSubOpts.className = "drwrSubOpts rNavBtn";
                         drwrSubOpts.append(matSym("open_in_new"), navData[index1]["subOpts"][index2].text);
                         if (typeof(navData[index1]["subOpts"][index2].link)=='string'){
@@ -108,13 +166,13 @@ function createNav(navData, forceMobile=false){
         }
 
 
-        let navPiImg = document.createElement("div");
-        navPiImg.id = "navPiImg";
-        let navPi = document.createElement("div");
+        let navPiImg = ce("img");
+        navPiImg.src = navData[index1].src || "/logo.png";
+        let navPi = ce("div");
         navPi.id = "navPi";
         navPi.onclick = function(){location.href = "/";};
         navPi.append(navPiImg);
-        let navPiCont = document.createElement("div");
+        let navPiCont = ce("div");
         navPiCont.id = "navPiCont";
         navPiCont.append(navPi);
 
@@ -125,63 +183,63 @@ function createNav(navData, forceMobile=false){
         homeSym.classList = "rNavBtn material-symbols-outlined";
         homeSym.onclick = function(){location.href = "/";}
 
-        let nav = document.createElement("div");
+        let nav = ce("div");
         nav.id = "nav";
         nav.className = "frostFX";
         nav.append(menuSym, navPiCont, homeSym);
 
-        let stylesheet = document.createElement("style"); //ToDo: MobileUI Nav CSS to DOM.
-        stylesheet.append(`
+        let css = ce("style"); //ToDo: MobileUI Nav CSS to DOM.
+        css.append(`
             .rNavBtn{padding: 8px 0px;margin: 2px 12px;border-radius: 10px;transition: ease-in 100ms;}
-            .rNavBtn:hover{color: ${color10};background: #00000040;padding: 8px 10px;margin: 2px 2px;transition: ease-out 200ms;}
-            #drwr{position: absolute;top: 0;bottom: 0;left: 0;right: 80px;display: none;flex-direction: column;text-shadow: ${colorAbsBG}B0 0px 0px 10px;}
-            #drwrTop{color: ${color10};display: flex;align-items: center;justify-content: space-between;padding: 5px 10px;font-weight: 600;font-size: 25px;text-shadow: ${color10}B0 0px 0px 10px}
+            .rNavBtn:hover{color: var(--color10);background: #00000040;padding: 8px 10px;margin: 2px 2px;transition: ease-out 200ms;}
+            #drwr{position: absolute;top: 0;bottom: 0;left: 0;right: 80px;display: none;flex-direction: column;text-shadow: var(--color60) 0px 0px 10px;}
+            #drwrTop{color: var(--color30);display: flex;align-items: center;justify-content: space-between;padding: 5px 10px;font-weight: 600;font-size: 25px;text-shadow: var(--color30) 0px 0px 10px;}
             #drwrTop .material-symbols-outlined{font-size: 40px;}
             #drwrBody{display: flex;flex-direction: column;overflow-y: scroll;overflow-x: none;}
             #drwrBody .material-symbols-outlined{font-size: 14px;max-width: 14px;margin-right: 5px;position: relative;top: 2px;}
             #drwrBack{display: none;position: absolute;top: 0;bottom: 0;right: 0px;width: 80px;backdrop-filter: brightness(0.20);}
-            .drwrOpts{font-weight: 600;font-size: 16px;color: ${color30}}
-            .drwrSubOpts{font-weight: 400;font-size: 14px;color: ${colorSubTxt};margin-left: 25px;}
-            #navCont{position: fixed;top: 0px;width: 100%;font-family: "Montserrat";text-shadow: ${colorAbsBG}B0 0px 0px 10px, ${colorAbsBG} 0px 0px 5px;}
-            #nav{color: ${color10};text-shadow: ${color10}B0 0px 0px 10px;display: flex;align-items: center;justify-content: center;height: 60px;padding: 0px 10px;border-radius: 0px 0px 25px 25px;}
+            .drwrOpts{font-weight: 600;font-size: 16px;color: var(--color30);}
+            .drwrSubOpts{font-weight: 400;font-size: 14px;color: var(--color30Shade);margin-left: 25px;}
+            #navCont{position: fixed;top: 0px;width: 100%;text-shadow: var(--color60) 0px 0px 10px, var(--color60) 0px 0px 5px;}
+            #nav{color: var(--color30);text-shadow: var(--color30) 0px 0px 10px;display: flex;align-items: center;justify-content: center;height: 60px;padding: 0px 10px;border-radius: 0px 0px 25px 25px;}
             #nav .material-symbols-outlined{font-size: 30px;}
             #navPiCont{position: relative;top: 15px;width: 100%;display: flex;justify-content: center;}
-            #navPi{height: 80px;width: 80px;border-radius: 50%;background: linear-gradient(180deg, #F5F5F5 0%, #a5a5a5 100%);box-shadow: ${colorAbsBG}55 0px 0px 20px 0px, ${colorAbsBG}80 0px 0px 5px 0px;}
-            #navPiImg{width: 100%;height:100%;border-radius: 50%;background-image: url("/logo.png");background-position: center;background-repeat: no-repeat;background-size: contain;}
+            #navPi{height:80px;width:80px;border-radius: 50%;background: linear-gradient(180deg, #F5F5F5 0%, #a5a5a5 100%);box-shadow: var(--color60) 0px 0px 20px 0px, var(--color60) 0px 0px 5px 0px;}
+            #navPi img{width:inherit;height:inherit;border-radius:50%;object-fit:contain;}
         `);
 
-        let drwrBack = document.createElement("drwrBack");
+        let drwrBack = ce("drwrBack");
         drwrBack.id = "drwrBack";
         drwrBack.onclick = function(){drwr.style.display = "none";drwrBack.style.display = "none";navCont.style.height = "auto"}
         
         let navCont = document.getElementById("navCont");
         navCont.innerHTML = "";
-        navCont.append(nav, drwrBack, drwr, stylesheet);
+        navCont.append(nav, drwrBack, drwr, css);
     }else{
 
-        let navLn1 = document.createElement("div");
+        let navLn1 = ce("div");
         navLn1.id = "navLn1";
     
-        let navLn2 = document.createElement("div");
+        let navLn2 = ce("div");
         navLn2.id = "navLn2";
     
         for(index1 in navData){
             if (navData[index1].logo){
-                let navPiImg = document.createElement("div");
-                navPiImg.id = "navPiImg";
+                let navPiImg = ce("img");
+                navPiImg.src = navData[index1].src || "/logo.png";
     
-                let navPi = document.createElement("div");
+                let navPi = ce("div");
                 navPi.id = "navPi";
                 navPi.onclick = function(){location.href = "/";};
                 navPi.append(navPiImg);
                 
-                let navPiCont = document.createElement("div");
+                let navPiCont = ce("div");
                 navPiCont.id = "navPiCont";
                 navPiCont.append(navPi);
                 
                 navLn1.append(navPiCont);
             }else{
-                let navLn1Opts = document.createElement("span");
+                let navLn1Opts = ce("span");
                 navLn1Opts.className = "navLn1Opts rNavBtn";
                 navLn1Opts.innerText = navData[index1].text;
                 if (typeof(navData[index1].link)=='string'){
@@ -200,7 +258,7 @@ function createNav(navData, forceMobile=false){
                         navLn2.style.display = "flex";
     
                         for (index2 in this.subOpts){
-                            let navLn2Opts = document.createElement("span");
+                            let navLn2Opts = ce("span");
                             navLn2Opts.className = "navLn2Opts rNavBtn";
                             navLn2Opts.append(matSym("open_in_new"), this.subOpts[index2].text);
                             if (typeof(this.subOpts[index2].link)=='string'){
@@ -224,7 +282,7 @@ function createNav(navData, forceMobile=false){
             }
         }
     
-        let nav = document.createElement("div");
+        let nav = ce("div");
         nav.id = "nav";
         nav.className = "frostFX";
         nav.append(navLn1, navLn2);
@@ -235,28 +293,28 @@ function createNav(navData, forceMobile=false){
             navLn2.style.display = "none";
         }
 
-        let stylesheet = document.createElement("style");
-        stylesheet.append(`
-            #navCont{position: fixed;top: 20px;width: 100%;display: flex;justify-content: center;font-family: "Montserrat";text-shadow: ${colorAbsBG}B0 0px 0px 10px, ${colorAbsBG} 0px 0px 5px;}
+        let css = ce("style");
+        css.append(`
+            #navCont{position: fixed;top: 20px;width: 100%;display: flex;justify-content: center;text-shadow: var(--color60) 0px 0px 10px, var(--color60) 0px 0px 5px;}
             #nav{white-space: nowrap;padding: 0px 15px;border-radius: 25px;}
             #navLn1{display: flex;justify-content: center;align-items: center;height: 90px;}
             #navLn1 .material-symbols-outlined{font-size: 24px;max-width: 24px;position: relative;top: 1px;}
-            .navLn1Opts{color: ${colorTxt};font-weight: 400;display: flex;justify-content: center;font-size: 20px;}
+            .navLn1Opts{color: var(--color30);font-weight: 400;display: flex;justify-content: center;font-size: 20px;}
             #navPiCont{position: relative;top: 20px;}
-            #navPi{height: 112px;width: 112px;border-radius: 50%;cursor: pointer;background: linear-gradient(180deg, #F5F5F5 0%, #a5a5a5 100%);box-shadow: ${colorAbsBG}55 0px 0px 20px 0px, ${colorAbsBG}80 0px 0px 5px 0px;}
-            #navPiImg{width: 100%;height:100%;border-radius: 50%;background-image: url("/logo.png");background-position: center;background-repeat: no-repeat;background-size: contain;}
+            #navPi{height: 112px;width: 112px;border-radius: 50%;cursor: pointer;background: linear-gradient(180deg, #F5F5F5 0%, #a5a5a5 100%);box-shadow: var(--color60) 0px 0px 20px 0px, var(--color60) 0px 0px 5px 0px;}
+            #navPi img{width:inherit;height:inherit;border-radius:50%;object-fit:contain;}
             #navLn2{display: flex;flex-direction: column;}
             #navLn2 .material-symbols-outlined{font-size: 17px;max-width: 17px;margin-right: 5px;position: relative;top: 2px;}
-            .navLn2Opts{font-size: 18px;font-weight: 400;color: ${colorSubTxt};}            
+            .navLn2Opts{font-size: 18px;font-weight: 400;color: var(--color30Shade);}            
             .rNavBtn{padding: 8px 0px;margin: 2px 12px;border-radius: 10px;transition: ease-in 100ms;cursor: pointer;}
-            .rNavBtn:hover{color: ${color10};background: #00000040;font-weight: 600;padding: 8px 10px;margin: 2px 2px;transition: ease-out 200ms;}
+            .rNavBtn:hover{color: var(--color10);background: #00000040;font-weight: 600;padding: 8px 10px;margin: 2px 2px;transition: ease-out 200ms;}
         `);
     
         let navCont = document.getElementById("navCont");
         navCont.innerHTML = "";
-        navCont.append(nav, stylesheet);
+        navCont.append(nav, css);
         
-        stylesheet.append(`
+        css.append(`
             @media only screen and (max-width: ${nav.offsetWidth || 1000}px){
                 #nav{padding: 0px 10px;border-radius: 20px;}
                 #navLn1{height: 60px;}
@@ -272,13 +330,6 @@ function createNav(navData, forceMobile=false){
 
     }
 
-}
-
-function matSym(id){
-    let sym = document.createElement("span");
-    sym.className = "material-symbols-outlined";
-    sym.innerText = id;
-    return sym
 }
 
 createNav(
@@ -303,7 +354,7 @@ createNav(
                 },
             ]
         },
-        {logo: true},
+        {logo: true, src: "/logo.png"},
         {text: "Option 4", subOpts: [{}]},
         {text: "Option 5", subOpts: [{}]},
         {text: "Option 6", subOpts: [{}]},
@@ -323,35 +374,61 @@ subNavData = {
 createSubNav(subNavData)
 
 \* -------------------------------------------------- */
-
 function createSubNav(subNavData){
-    let subNavImg = document.createElement("div");
-    subNavImg.id = "subNavImg";
-    subNavImg.style.background = `url("${subNavData.image}")`;
-    subNavImg.style.backgroundRepeat = "no-repeat";
-    subNavImg.style.backgroundPosition = "center";
-    subNavImg.style.backgroundSize = "cover";
-
-    let subNavTxt = document.createElement("div");
-    subNavTxt.id = "subNavTxt";
-    subNavTxt.innerText = subNavData.text;
-
-    let subNavSubTxt = document.createElement("div");
-    subNavSubTxt.id = "subNavSubTxt";
-    subNavSubTxt.innerText = subNavData.subText;
-
-    let stylesheet = document.createElement("style");
-    stylesheet.append(`
-        #subNavCont{font-family: "Montserrat";display: flex;flex-direction: column;align-items: center}
-        #subNavImg{max-width: 100%;min-width: 100%;max-height: 250px;min-height: 250px;}
-        #subNavTxt{margin-top: 30px;font-size: 35px;font-weight: 600;text-align: center;color: ${color10};text-shadow: ${color10}B0 0px 0px 10px;}
-        #subNavSubTxt{margin-top: 10px;margin-bottom: 30px;font-size: 25px;text-align: center;color: ${color30};text-shadow: ${color30}B0 0px 0px 10px;}
-        @media only screen and (max-width: ${mobileUiThreshold}px){#subNavImg{max-height: 150px;min-height: 150px;}#subNavTxt{font-size: 25px;}#subNavSubTxt{font-size: 18px;}}
-    `);
-    
     let subNavCont = document.getElementById("subNavCont");
     subNavCont.innerHTML = "";
-    subNavCont.append(subNavImg, subNavTxt, subNavSubTxt, stylesheet);
+    subNavCont.append(
+        ce("div", {id: "subNavImg", style: `background: url("${subNavData.image}");background-repeat: no-repeat;background-position: center;background-size: cover`}),
+        ce("div", {id: "subNavTxt", innerText: subNavData.text || siteName}),
+        ce("div", {id: "subNavSubTxt", innerText: subNavData.subText || siteName})
+    );
+}
+
+
+
+/* -------------------------------------------------- *\
+|---          HELP RELATING THE OverPage.           ---|
+\* -------------------------------------------------- */
+
+function createOP(title, bodyDom){
+    document.getElementById("overPage").innerHTML = "";
+    document.getElementById("overPage").append(
+        ce("div", {className: "OPCard"}, [
+            ce("div", {className: "OPTopBar"}, [
+                title,
+                matSym("close", {className: "rBtn material-symbols-outlined", onclick: function(){document.getElementById("overPage").style.display = "none";}})
+            ]),
+            bodyDom
+        ])
+    );
+    document.getElementById("overPage").style.display = "flex";
+}
+
+
+
+/* -------------------------------------------------- *\
+|---          HELP RELATING THE prsnCard.           ---|
+
+prsnData = {
+    name: "",
+    post: "",
+    image: "",
+    body: ""
+}
+createPrsnCard(prsnData)
+
+\* -------------------------------------------------- */
+
+function createPrsnCard(prsnData){
+    return ce("div", {className: "prsnCard"}, [
+        ce("div", {className: "prsnCardBGTop"}),
+        ce("div", {className: "prsnCardFG"}, [
+            ce("div", {className: "prsnCardName"}, [prsnData.name]),
+            ce("div", {className: "prsnCardPost"}, ["Post: ",ce("b",{},prsnData.post)]),
+            ce("img", {className: "prsnCardImg", src: prsnData.image}),
+            ce("div", {className: "prsnCardBody"}, [prsnData.body]),
+        ])
+    ]);
 }
 
 
@@ -367,4 +444,18 @@ createFtr(ftrData)
 
 function createFtr(ftrData){
 
+}
+
+
+
+/* -------------------------------------------------- *\
+|---                    Page Init                   ---|
+\* -------------------------------------------------- */
+function loadCommonData(callback){
+    db.collection("siteData").doc("common").get().then((ref)=>{
+        commonDBData = ref.data();
+        // createNav(commonDBData.navData);
+        // createFtr(commonDBData.ftrData);
+        callback();
+    });
 }

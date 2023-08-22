@@ -1,0 +1,71 @@
+html{font-family: 'Montserrat', 'Noto Sans', 'Roboto', Arial, Helvetica, sans-serif;background: var(--color60Tint);color: var(--color30)}body{margin: 0;}
+
+::-webkit-scrollbar {width: 16px;height: 16px;}
+::-webkit-scrollbar-thumb {border: 4px solid #00000000;background-clip: padding-box;border-radius: 10px;background-color: #ffffff80;}
+::-webkit-scrollbar-track{background-color: transparent;}
+
+input{width: 100%;height: 40px;font-size: 18px;font-family: "Montserrat", "Roboto", Arial, Helvetica, sans-serif;color: white;fill: white;background: var(--color60Tint);border: none;border-radius: 10px;padding: 0px 10px;}
+textarea{width: 100%;height: 100px;font-size: 18px;font-family: "Montserrat", "Roboto", Arial, Helvetica, sans-serif;color: white;fill: white;background: var(--color60Tint);border: none;border-radius: 10px;padding: 0px 10px;}
+select{width: 100%;height: 40px;font-size: 18px;font-family: "Montserrat", "Roboto", Arial, Helvetica, sans-serif;color: white;fill: white;background: var(--color60Tint);border: none;border-radius: 10px;padding: 0px 10px;}
+
+
+/* Custom */
+.frostFX{
+    background: #75757532;background: linear-gradient(180deg, #75757532 0%, #35353532 100%);
+    backdrop-filter: blur(15px) brightness(90%) contrast(110%) saturate(110%);
+    border: solid #00000040 2px;
+    box-shadow: #15151580 0px 0px 50px 20px, #15151555 0px 0px 15px 0px, inset 0px 0px 15px #ffffff40;
+}
+
+.rSect{background: var(--color60);padding: 15px;margin-bottom: 25px;}
+.rSectTop{display: flex;justify-content: space-between;align-items: center;}
+.rSectTitle{color: var(--color10);font-weight: 700;font-size: 25px;}
+.rSectBody{margin-top: 10px;}
+
+.rBtn{background: #00000040;padding: 8px 10px;border-radius: 10px;transition: ease-in 100ms;cursor: pointer;user-select: none;}
+.rBtn:hover{font-weight: 600;background: #00000080;transition: ease-out 200ms;color: var(--color10)}
+
+
+/* prsnCard */
+#prsnCardCont{display: flex;overflow-x: auto;}
+.prsnCard{
+    min-width: 325px;max-width: 325px;min-height: 500px;max-height: 500px;border-radius: 12px;
+    background:var(--color60);background:linear-gradient(180deg,var(--color60) 0%,var(--color60Tint) 160%);cursor:pointer;
+    border:solid #ffffff25 2px;overflow:hidden;display:flex;flex-direction:column;margin-right: 10px;position:relative;
+}.prsnCardBGTop{z-index:1;position:absolute;max-width:inherit;min-width:inherit;height:120px;background-color:var(--color60Tint);border-radius:10px 10px 0px 0px;border:solid #ffffff25 2px;border-top:0;border-left:0;border-right:0;}
+.prsnCardFG{z-index:2;padding:12px;}
+.prsnCardName{font-size:18px;font-weight:600;margin-bottom:5px;}
+.prsnCardPost{font-size:14px;color: var(--color30Shade);margin-bottom:10px;}
+.prsnCardImg{background-color:var(--color60Tint);height:200px;width:160px;border-radius: 8px;margin-bottom:10px;border:solid #ffffff25 2px;object-fit:cover;}
+.prsnCardBody{font-size: 16px;color: var(--color30Shade);}
+
+
+/* OverPage */
+#overPage{
+    display: none;justify-content: center;align-items: center;flex-direction: column;
+    position: fixed;
+    top: 0;bottom: 0;left: 0;right: 0;
+    background: #000000aa;
+    backdrop-filter: brightness(80%) contrast(110%) saturate(110%);
+}
+.OPCard{
+    background-color: var(--color60);
+    border-radius: 10px;
+    padding: 10px;
+}
+.OPTopBar{font-weight: 600;font-size: 18px;margin-left: 5px;margin-bottom: 15px;display: flex;justify-content: space-between;align-items: center;}
+.OPTopBar .rBtn{margin-left: 10px;color: var(--color10);}
+#overPage input{width: auto;}
+
+
+/* SUB-NAV */
+#subNavCont{display: flex;flex-direction: column;align-items: center}
+#subNavImg{max-width: 100%;min-width: 100%;max-height: 250px;min-height: 250px;}
+#subNavTxt{margin-top: 30px;font-size: 35px;font-weight: 600;text-align: center;color: var(--color10);}
+#subNavSubTxt{margin-top: 10px;margin-bottom: 30px;font-size: 25px;text-align: center;color: var(--color10Tint);}
+
+
+/* ftr */
+/* html{height: 100%;}
+body{display: flex;flex-direction: column;min-height: 100%;}
+#ftrCont{margin-top: auto;width: 100%;height: 200px;background-color: ##ffccdd;} */

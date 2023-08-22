@@ -1,10 +1,22 @@
+// Common
 createSubNav({
-    text: "RhymePlays Dads College Site Template",
-    subText: "Global Page",
+    subText: "Common Page",
     image: "/logo.png"
 });
 
-document.getElementsByTagName("body")[0].append(createNtc({
+loadCommonData(()=>{});
+
+let extraCSS = ce("style");
+extraCSS.append(`
+    @media only screen and (max-width: ${mobileUiThreshold}px){
+
+    }
+`);
+document.head.append(extraCSS);
+
+
+// Main
+document.getElementsByTagName("body")[0].append(createNews({
     title: "Random Title",
     date: Date(),
     body: "What do i write here? No idea.\nLine Break Works!!",
@@ -12,8 +24,8 @@ document.getElementsByTagName("body")[0].append(createNtc({
         "/logo.png",
         "/logo.png"
     ]
-}))
-document.getElementsByTagName("body")[0].append(createNtc({
+}));
+document.getElementsByTagName("body")[0].append(createNews({
     title: "Random Title",
     date: Date(),
     body: "What do i write here? No idea.\nLine Break Works!!",
@@ -21,8 +33,8 @@ document.getElementsByTagName("body")[0].append(createNtc({
         "/logo.png",
         "/logo.png"
     ]
-}))
-document.getElementsByTagName("body")[0].append(createNtc({
+}));
+document.getElementsByTagName("body")[0].append(createNews({
     title: "Random Title",
     date: Date(),
     body: "What do i write here? No idea.\nLine Break Works!!",
@@ -30,4 +42,4 @@ document.getElementsByTagName("body")[0].append(createNtc({
         "/logo.png",
         "/logo.png"
     ]
-}))
+}));
