@@ -1,15 +1,11 @@
-// Common
-createSubNav({
-    subText: "All News",
-    image: "/logo.png"
-});
-
-let extraCSS = ce("style");
-extraCSS.append(`
+initPage({
+    pageName: "All News",
+    subNavImage: "/logo.png",
+    extraCSS: `
     @media only screen and (max-width: ${mobileUiThreshold}px){
 
-    }
-`);document.head.append(extraCSS);
+    }`
+});
 
 
 // allNews

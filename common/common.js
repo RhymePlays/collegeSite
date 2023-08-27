@@ -1,4 +1,3 @@
-
 /* -------------------------------------------------- *\
 |---            Variables and Parameters            ---|
 
@@ -11,33 +10,34 @@ value for window.innerWidth goes below
 
 \* -------------------------------------------------- */
 var commonDBData = undefined;
-
 var mobileUiThreshold = 700;
-var siteName = "RhymePlays Academy Site Version 2";
-
-var color10 = "#ff4466";
-var color10Tint = "#ffaabb";
-var color30 = "#ffffff";
-var color30Shade = "#b5b5b5";
-var color60 = "#151515";
-var color60Tint = "#202020";
-var colorGreen = "#10f060"
-
-
-let commonCSSExtra = ce("style");
-commonCSSExtra.append(`
-    :root{
-        --color10: ${color10};
-        --color10Tint: ${color10Tint};
-        --color30: ${color30};
-        --color30Shade: ${color30Shade};
-        --color60: ${color60};
-        --color60Tint: ${color60Tint};
-        --colorGreen: ${colorGreen};
-        --mobileUiThreshold: ${mobileUiThreshold}px;
-    }
-`);document.head.append(commonCSSExtra);
-
+var siteName = "bakedSiteName";
+var navData = [
+    {text: "Home", link: "/"},
+    {text: "Option Ni"},
+    {
+        text: "Option San",
+        link: "#a",
+        subOpts: [
+            {
+                text: "Sub-Option C",
+                link: "#b"
+            },
+            {
+                text: "Sub-Option D",
+                link: "#c"
+            },
+            {
+                text: "Sub-Option E",
+                link: "#d"
+            },
+        ]
+    },
+    {logo: true, src: "/logo.png"},
+    {text: "Option 4", subOpts: [{}]},
+    {text: "Option 5", subOpts: [{}]},
+    {text: "Option 6", subOpts: [{}]},
+];
 
 
 /* -------------------------------------------------- *\
@@ -56,6 +56,8 @@ const app = firebase.initializeApp(firebaseConfig);
 const analytics = firebase.analytics(app);
 const db = firebase.firestore();
 
+
+
 /* -------------------------------------------------- *\
 |---                      Random                    ---|
 \* -------------------------------------------------- */
@@ -65,21 +67,14 @@ function ce(type, opts={}, children=[]){
     for (index in children){elem.append(children[index]);}
     return elem;
 }
-
 function matSym(id, opts={}){return ce("span", Object.assign(opts, {className: "material-symbols-outlined", innerText: id}))}
-
-let extraCommonCSS = ce("style");
-extraCommonCSS.append(`
-    @media only screen and (max-width: ${mobileUiThreshold}px){
-        #subNavImg{max-height: 150px;min-height: 150px;}#subNavTxt{font-size: 25px;}#subNavSubTxt{font-size: 18px;}
-    }
-`);
-document.head.append(extraCommonCSS);
 
 
 
 /* -------------------------------------------------- *\
 |---   HELP RELATING THE NAV. (The Top Floaty Bit)  ---|
+
+Maybe ToDo: Maybe update the thing to use ce
 
 The Logo at the Center will automatically be populated with
 image found the following URL: "/logo.png"
@@ -116,7 +111,6 @@ createNav(navData)
 
 \* -------------------------------------------------- */
 function createNav(navData, forceMobile=false){
-
     if (forceMobile || window.innerWidth < mobileUiThreshold){        
         drwrTop = ce("div");
         drwrTop.id = "drwrTop";
@@ -200,7 +194,7 @@ function createNav(navData, forceMobile=false){
             #drwrBack{display: none;position: absolute;top: 0;bottom: 0;right: 0px;width: 80px;backdrop-filter: brightness(0.20);}
             .drwrOpts{font-weight: 600;font-size: 16px;color: var(--color30);}
             .drwrSubOpts{font-weight: 400;font-size: 14px;color: var(--color30Shade);margin-left: 25px;}
-            #navCont{position: fixed;top: 0px;width: 100%;text-shadow: var(--color60) 0px 0px 10px, var(--color60) 0px 0px 5px;}
+            #navCont{z-index:3;position: fixed;top: 0px;width: 100%;text-shadow: var(--color60) 0px 0px 10px, var(--color60) 0px 0px 5px;}
             #nav{color: var(--color30);text-shadow: var(--color30) 0px 0px 10px;display: flex;align-items: center;justify-content: center;height: 60px;padding: 0px 10px;border-radius: 0px 0px 25px 25px;}
             #nav .material-symbols-outlined{font-size: 30px;}
             #navPiCont{position: relative;top: 15px;width: 100%;display: flex;justify-content: center;}
@@ -295,7 +289,7 @@ function createNav(navData, forceMobile=false){
 
         let css = ce("style");
         css.append(`
-            #navCont{position: fixed;top: 20px;width: 100%;display: flex;justify-content: center;text-shadow: var(--color60) 0px 0px 10px, var(--color60) 0px 0px 5px;}
+            #navCont{z-index:3;position: fixed;top: 20px;width: 100%;display: flex;justify-content: center;text-shadow: var(--color60) 0px 0px 10px, var(--color60) 0px 0px 5px;}
             #nav{white-space: nowrap;padding: 0px 15px;border-radius: 25px;}
             #navLn1{display: flex;justify-content: center;align-items: center;height: 90px;}
             #navLn1 .material-symbols-outlined{font-size: 24px;max-width: 24px;position: relative;top: 1px;}
@@ -332,35 +326,6 @@ function createNav(navData, forceMobile=false){
 
 }
 
-createNav(
-    [
-        {text: "Option Ichi", link: "/", subOpts: []},
-        {text: "Option Ni"},
-        {
-            text: "Option San",
-            link: "#a",
-            subOpts: [
-                {
-                    text: "Sub-Option C",
-                    link: "#b"
-                },
-                {
-                    text: "Sub-Option D",
-                    link: "#c"
-                },
-                {
-                    text: "Sub-Option E",
-                    link: "#d"
-                },
-            ]
-        },
-        {logo: true, src: "/logo.png"},
-        {text: "Option 4", subOpts: [{}]},
-        {text: "Option 5", subOpts: [{}]},
-        {text: "Option 6", subOpts: [{}]},
-    ]
-);
-
 
 
 /* -------------------------------------------------- *\
@@ -375,13 +340,15 @@ createSubNav(subNavData)
 
 \* -------------------------------------------------- */
 function createSubNav(subNavData){
-    let subNavCont = document.getElementById("subNavCont");
-    subNavCont.innerHTML = "";
-    subNavCont.append(
-        ce("div", {id: "subNavImg", style: `background: url("${subNavData.image}");background-repeat: no-repeat;background-position: center;background-size: cover`}),
-        ce("div", {id: "subNavTxt", innerText: subNavData.text || siteName}),
-        ce("div", {id: "subNavSubTxt", innerText: subNavData.subText || siteName})
-    );
+    try{
+        let subNavCont = document.getElementById("subNavCont");
+        subNavCont.innerHTML = "";
+        subNavCont.append(
+            ce("div", {id: "subNavImg", style: `background: url("${subNavData.image}");background-repeat: no-repeat;background-position: center;background-size: cover`}),
+            ce("div", {id: "subNavTxt", innerText: subNavData.text || siteName}),
+            ce("div", {id: "subNavSubTxt", innerText: subNavData.subText || siteName})
+        );
+    }catch(e){}
 }
 
 
@@ -454,8 +421,42 @@ function createFtr(ftrData){
 function loadCommonData(callback){
     db.collection("siteData").doc("common").get().then((ref)=>{
         commonDBData = ref.data();
-        // createNav(commonDBData.navData);
-        // createFtr(commonDBData.ftrData);
         callback();
+    });
+}
+function initPage(arg={pageName: undefined, subNavImage: undefined, onCommonLoad: undefined, extraCSS: undefined}){
+    loadCommonData(()=>{
+        // Set Colors
+        try{commonDBData.colors.color10}catch(e){commonDBData = Object(commonDBData);commonDBData["colors"]={};}
+        let commonCSSExtra = ce("style");
+        commonCSSExtra.append(`
+            :root{
+                --color10: ${commonDBData.colors.color10 || "#ff4466"};
+                --color10Tint: ${commonDBData.colors.color10Tint || "#ffaabb"};
+                --color30: ${commonDBData.colors.color30 || "#ffffff"};
+                --color30Shade: ${commonDBData.colors.color30Shade || "#b5b5b5"};
+                --color60: ${commonDBData.colors.color60 || "#151515"};
+                --color60Tint: ${commonDBData.colors.color60Tint || "#202020"};
+                --colorGreen: ${commonDBData.colors.colorGreen || "#10f060"};
+                --mobileUiThreshold: ${mobileUiThreshold}px;
+            }
+            @media only screen and (max-width: ${mobileUiThreshold}px){
+                #subNavImg{max-height: 150px;min-height: 150px;}#subNavTxt{font-size: 25px;}#subNavSubTxt{font-size: 18px;}
+            }
+        `, arg.extraCSS);
+        document.head.append(commonCSSExtra);
+    
+        // Load Nav
+        createNav(commonDBData.navData || navData);
+    
+        // Load Footer
+        createFtr(commonDBData.ftrData);
+        
+        // Load SubNav And Set Page Title
+        createSubNav({image: arg.subNavImage || Object(commonDBData.pinnedPhotos)[Math.floor(Math.random() * (Object(commonDBData.pinnedPhotos).length)) || 0], text: commonDBData.siteName || siteName, subText: arg.pageName || ""});
+        document.getElementsByTagName("head")[0].append(ce("title", {}, [`${arg.pageName || ""} - ${commonDBData.siteName || siteName}`]));
+
+        // OnLoad Callback
+        if (typeof(arg.onCommonLoad) == 'function'){arg.onCommonLoad();}
     });
 }

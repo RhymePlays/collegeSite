@@ -1,14 +1,11 @@
-createSubNav({
-    subText: "News Page",
-    image: "/logo.png"
-});
-
-let extraCSS = ce("style");
-extraCSS.append(`
+initPage({
+    pageName: "News Page",
+    subNavImage: "/logo.png",
+    extraCSS: `
     @media only screen and (max-width: ${mobileUiThreshold}px){
 
-    }
-`);document.head.append(extraCSS);
+    }`
+});
 
 const newsId=new URLSearchParams(window.location.search).get("newsID");
 db.collection("news").doc(newsId).get().then((newsRef)=>{

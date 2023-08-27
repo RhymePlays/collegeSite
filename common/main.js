@@ -1,18 +1,12 @@
 // Common
-createSubNav({
-    subText: "Common Page",
-    image: "/logo.png"
-});
-
-loadCommonData(()=>{});
-
-let extraCSS = ce("style");
-extraCSS.append(`
+initPage({
+    pageName: "Common Page",
+    subNavImage: "/logo.png",
+    extraCSS: `
     @media only screen and (max-width: ${mobileUiThreshold}px){
 
-    }
-`);
-document.head.append(extraCSS);
+    }`
+});
 
 
 // Main
