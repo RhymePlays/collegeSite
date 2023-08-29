@@ -1,0 +1,17 @@
+#pageCen{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    background-color: var(--color60);
+    padding: 25px 0px;
+}
+#allPrsnCardCont{
+    width: 100%;
+    max-width: 1200px;
+    margin: 0px 5px;
+}
+.prsnCard{
+    width: inherit;
+    height: auto;
+    margin-bottom: 15px;
+}

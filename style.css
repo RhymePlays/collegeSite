@@ -80,6 +80,6 @@
     /*box-shadow: inset 0px 0px 5px #ffffff20;*/border: solid #ffffff40 2px;overflow: hidden;display: flex;flex-direction: column;
 }
 .rCardTtl{font-size: 18px;font-weight: 600;margin-bottom: 5px;}
-.rCardDate{font-size: 14px;color: var(--color30Shade);margin-bottom: 5px;}
+.rCardDate{display: flex;align-items: center;font-size: 14px;color: var(--color30Shade);margin-bottom: 5px;}
 .rCardBody{height: 100%;width: 100%;overflow: hidden;color: var(--color30Shade);}
 .rCardBody img{width: inherit;height: inherit;object-fit: cover;border-radius: 8px;}

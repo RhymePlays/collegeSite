@@ -26,14 +26,14 @@ function createNews(ntcData){
     
     let ntcDateObj = new Date(ntcData.date);
     let ntcDate = ce("div");
-    ntcDate.style.color = color10Tint;
+    ntcDate.style.color = "var(--color10Tint)";
     ntcDate.style.fontSize = "14px";
     ntcDate.style.fontWeight = "400";
     ntcDate.style.marginTop = "8px";
     ntcDate.append(ntcdateBStr, `${ntcDateObj.getDate()}/${ntcDateObj.getMonth()}/${ntcDateObj.getFullYear()}`);
     
     let ntcTop = ce("div");
-    ntcTop.style.color = color10;
+    ntcTop.style.color = "var(--color10)";
     ntcTop.style.padding = "12px";
     ntcTop.style.borderRadius = "18px 18px 0px 0px";
     ntcTop.style.backgroundColor = "#ffffff20";
@@ -70,13 +70,13 @@ function createNews(ntcData){
             ntcImgCont.append(ntcImg);
         }
         
-        ntcImgSect.style.color = color10;
+        ntcImgSect.style.color = "var(--color10)";
         ntcImgSect.style.marginTop = "12px";
         ntcImgSect.style.paddingTop = "8px";
         ntcImgSect.style.fontSize = "20px";
         ntcImgSect.style.fontWeight = "600";
         
-        ntcImgSect.style.border = `3px solid ${color10}`;
+        // ntcImgSect.style.border = `3px solid ${color10}`;
         ntcImgSect.style.borderBottom = "0";
         ntcImgSect.style.borderLeft = "0";
         ntcImgSect.style.borderRight = "0";
@@ -88,9 +88,9 @@ function createNews(ntcData){
     ntcBody.append(ntcBodyTxt, ntcImgSect);
 
     let ntcCont = ce("div");
-    ntcCont.style.border = `solid ${color10} 2px`;
-    ntcCont.style.boxShadow = `${color10}80 0px 0px 40px 5px, ${color10}40 0px 0px 20px 0px, inset 0px 0px 20px 0px ${color10}60`;
-    ntcCont.style.background = color60Tint;
+    // ntcCont.style.border = `solid ${color10} 2px`;
+    // ntcCont.style.boxShadow = `${color10}80 0px 0px 40px 5px, ${color10}40 0px 0px 20px 0px, inset 0px 0px 20px 0px ${color10}60`;
+    // ntcCont.style.background = color60Tint;
     ntcCont.style.margin = "15px";
     ntcCont.style.borderRadius = "18px";
     ntcCont.append(ntcTop, ntcBody);

@@ -79,28 +79,23 @@ ToDo: Show something if the Body is empty.
 function createNewsCard(newsData){
     
     let dateO = new Date(newsData.date);
-    let date = ce("div");
-    date.classList = "rCardDate";
-    date.append(Object.assign(ce("b"), {innerText: "Date: ",}), `${dateO.getDate()}/${dateO.getMonth()}/${dateO.getFullYear()}`);
 
-    let body = ce("div");
-    body.className = "rCardBody";
+    let body = ce("div", {className: "rCardBody"});
     if (typeof(newsData.images) == "object"){
         if(newsData.images.length > 0){
-            body.append(Object.assign(ce("img"), {src: newsData.images[0]}));
+            body.append(ce("img", {src: newsData.images[0]}));
         }else{
             body.innerText = newsData.body;
         }
     }else{
         body.innerText = newsData.body;
     }
-
-    let card = ce("div");
-    card.className = "rCard";
-    card.onclick = function(){location.href = `/news/?newsID=${newsData.newsID}`;}
-    card.append(Object.assign(ce("div"), {classList: "rCardTtl", innerText: newsData.title}), date, body);
     
-    return card;
+    return ce("div", {className: "rCard", onclick: function(){location.href = `/news/?newsID=${newsData.newsID}`;}}, [
+        ce("div", {classList: "rCardTtl", innerText: newsData.title}),
+        ce("div", {className: "rCardDate"}, [matSym("schedule", {style: "margin-right:5px;"}), ce("span", {}, [ce("b", {}, ["Date: "]), `${dateO.getDate()}/${dateO.getMonth()}/${dateO.getFullYear()}`])]),
+        body
+    ]);
 }
 function initTopNews(newsArray){
     document.getElementById("newsCardCont").innerHTML = "";
@@ -120,9 +115,3 @@ function initPinnedPpl(pplArray){
         document.getElementById("prsnCardCont").append(createPrsnCard(pplArray[index]));
     }
 }
-
-
-
-/* -------------------------------------------------- *\
-|---                    Page Init                   ---|
-\* -------------------------------------------------- */

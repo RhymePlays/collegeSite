@@ -7,7 +7,7 @@ html{font-family: 'Montserrat', 'Noto Sans', 'Roboto', Arial, Helvetica, sans-se
 input{width: 100%;height: 40px;font-size: 18px;font-family: "Montserrat", "Roboto", Arial, Helvetica, sans-serif;color: white;fill: white;background: var(--color60Tint);border: none;border-radius: 10px;padding: 0px 10px;}
 textarea{width: 100%;height: 100px;font-size: 18px;font-family: "Montserrat", "Roboto", Arial, Helvetica, sans-serif;color: white;fill: white;background: var(--color60Tint);border: none;border-radius: 10px;padding: 0px 10px;}
 select{width: 100%;height: 40px;font-size: 18px;font-family: "Montserrat", "Roboto", Arial, Helvetica, sans-serif;color: white;fill: white;background: var(--color60Tint);border: none;border-radius: 10px;padding: 0px 10px;}
-
+hr{margin: 0px 15px;border-width: 2px;border-color: var(--color30Tint);border-style:solid;border-radius: 10px;}
 
 /* Custom */
 .frostFX{
@@ -29,15 +29,16 @@ select{width: 100%;height: 40px;font-size: 18px;font-family: "Montserrat", "Robo
 /* prsnCard */
 #prsnCardCont{display: flex;overflow-x: auto;}
 .prsnCard{
-    min-width: 325px;max-width: 325px;min-height: 500px;max-height: 500px;border-radius: 12px;
-    background:var(--color60);background:linear-gradient(180deg,var(--color60) 0%,var(--color60Tint) 160%);cursor:pointer;
+    min-width:325px;width:325px;height:500px;border-radius:12px;
+    background:var(--color60);background:linear-gradient(180deg,var(--color60) 0%,var(--color60Tint) 160%);
     border:solid #ffffff25 2px;overflow:hidden;display:flex;flex-direction:column;margin-right: 10px;position:relative;
-}.prsnCardBGTop{z-index:1;position:absolute;max-width:inherit;min-width:inherit;height:120px;background-color:var(--color60Tint);border-radius:10px 10px 0px 0px;border:solid #ffffff25 2px;border-top:0;border-left:0;border-right:0;}
+}.prsnCardBGTop{z-index:1;position:absolute;width:100%;height:125px;background-color:var(--color60Tint);border-radius:10px 10px 0px 0px;border:solid #ffffff25 2px;border-top:0;border-left:0;border-right:0;}
 .prsnCardFG{z-index:2;padding:12px;}
 .prsnCardName{font-size:18px;font-weight:600;margin-bottom:5px;}
-.prsnCardPost{font-size:14px;color: var(--color30Shade);margin-bottom:10px;}
+.prsnCardPost{display: flex;align-items: center;font-size:14px;color: var(--color30Shade);margin-bottom:10px;}
 .prsnCardImg{background-color:var(--color60Tint);height:200px;width:160px;border-radius: 8px;margin-bottom:10px;border:solid #ffffff25 2px;object-fit:cover;}
 .prsnCardBody{font-size: 16px;color: var(--color30Shade);}
+.prsnCardID{display: flex;align-items: center;font-size:14px;color: var(--color30Shade);margin-top:10px;}
 
 
 /* OverPage */

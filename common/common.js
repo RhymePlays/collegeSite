@@ -390,10 +390,11 @@ function createPrsnCard(prsnData){
     return ce("div", {className: "prsnCard"}, [
         ce("div", {className: "prsnCardBGTop"}),
         ce("div", {className: "prsnCardFG"}, [
-            ce("div", {className: "prsnCardName"}, [prsnData.name]),
-            ce("div", {className: "prsnCardPost"}, ["Post: ",ce("b",{},prsnData.post)]),
+            ce("div", {className: "prsnCardName", innerText: prsnData.name}),
+            ce("div", {className: "prsnCardPost"}, [matSym("work", {style: "margin-right:5px;"}), ce("span", {}, ["Post:", ce("b",{innerText: prsnData.post, style: "margin-left:5px"})])]),
             ce("img", {className: "prsnCardImg", src: prsnData.image}),
-            ce("div", {className: "prsnCardBody"}, [prsnData.body]),
+            ce("div", {className: "prsnCardBody", innerText: prsnData.body}),
+            ce("div", {className: "prsnCardID"}, [matSym("fingerprint", {style: "margin-right:5px;"}), ce("span", {}, [ce("b", {}, ["WebID: "]), prsnData.prsnID])]),
         ])
     ]);
 }
@@ -453,7 +454,7 @@ function initPage(arg={pageName: undefined, subNavImage: undefined, onCommonLoad
         createFtr(commonDBData.ftrData);
         
         // Load SubNav And Set Page Title
-        createSubNav({image: arg.subNavImage || Object(commonDBData.pinnedPhotos)[Math.floor(Math.random() * (Object(commonDBData.pinnedPhotos).length)) || 0], text: commonDBData.siteName || siteName, subText: arg.pageName || ""});
+        createSubNav({image: arg.subNavImage || Object(commonDBData.pinnedPhotos)[Math.floor(Math.random() * (Object(commonDBData.pinnedPhotos).length)) || 0].url, text: commonDBData.siteName || siteName, subText: arg.pageName || ""});
         document.getElementsByTagName("head")[0].append(ce("title", {}, [`${arg.pageName || ""} - ${commonDBData.siteName || siteName}`]));
 
         // OnLoad Callback
