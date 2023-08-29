@@ -374,6 +374,56 @@ function createOP(title, bodyDom){
 
 
 /* -------------------------------------------------- *\
+|---         HELP RELATING THE Notice Box.          ---|
+
+artclData = {
+    title: "",
+    boardID: "",
+    artclID: "",
+    date: 0,
+    body: "",
+    images: ["URL", "URL"]
+}
+createArticle(navData)
+
+ToDo: Expand images when clicked/tapped upon.
+ToDo: Create the "Share" area. (Below Images)
+ToDo: Implement something like **MarkDown** for innerText.
+
+\* -------------------------------------------------- */
+function createArticle(artclData){
+    let dateObj = new Date(artclData.date);
+
+    return ce("div", {className: "artcl"}, [
+        ce("div", {className: "artclTop"}, [
+            ce("div", {className: "rSectTitle"}, [matSym("newspaper", {style: "margin-right: 5px;"}), ce("span", {innerText: artclData.title})]),
+            ce("div", {className: "rSectGrayTxt"}, [matSym("schedule", {style: "margin-right: 5px;"}), ce("b", {innerText: "Date:", style: "margin-right: 5px;"}), ce("span", {innerText: `${dateObj.getDate()}/${dateObj.getMonth()}/${dateObj.getFullYear()}`})]),
+            ce("div", {className: "rSectGrayTxt"}, [matSym("fingerprint", {style: "margin-right: 5px;"}), ce("b", {innerText: "WebID:", style: "margin-right: 5px;"}), ce("span", {innerText: artclData.artclID})]),
+        ]),
+        ce("div", {className: "artclDiv artclBody", innerText: artclData.body}),
+        ce("div", {className: "artclDiv"}, [
+            ce("hr"),
+            ce("div", {className: "rSectGrayTxt"}, [matSym("photo", {style: "margin-right: 5px;"}), ce("span", {innerText: "Images"})]),
+            ce("div", {className: "artclImgCont"}, function(){
+                let retVal=[];
+                for(index in artclData.images){retVal.push(ce("img", {src: artclData.images[index]}));}
+                return retVal;
+            }()),
+        ]),
+        ce("div", {className: "artclDiv"}, [
+            ce("hr"),
+            ce("div", {className: "rSectGrayTxt"}, [matSym("share", {style: "margin-right: 5px;"}), ce("span", {innerText: "Share"})]),
+            ce("div", {className: "artclShare"}, [
+                ce("div", {className: "rBtn", onclick: function(){window.open(`${window.location.origin}/article/?boardID=${artclData.boardID||""}&artclID=${artclData.artclID||""}`, "_blank");}}, [matSym("link")]),
+                ce("div", {className: "rBtn", onclick: function(){}}, [matSym("mail")]),
+            ]),
+        ]),
+    ]);
+}
+
+
+
+/* -------------------------------------------------- *\
 |---          HELP RELATING THE prsnCard.           ---|
 
 prsnData = {
@@ -454,7 +504,7 @@ function initPage(arg={pageName: undefined, subNavImage: undefined, onCommonLoad
         createFtr(commonDBData.ftrData);
         
         // Load SubNav And Set Page Title
-        createSubNav({image: arg.subNavImage || Object(commonDBData.pinnedPhotos)[Math.floor(Math.random() * (Object(commonDBData.pinnedPhotos).length)) || 0].url, text: commonDBData.siteName || siteName, subText: arg.pageName || ""});
+        createSubNav({image: arg.subNavImage || Object(Object(commonDBData.pinnedPhotos)[Math.floor(Math.random() * (Object(commonDBData.pinnedPhotos).length)) || 0]).url, text: commonDBData.siteName || siteName, subText: arg.pageName || ""});
         document.getElementsByTagName("head")[0].append(ce("title", {}, [`${arg.pageName || ""} - ${commonDBData.siteName || siteName}`]));
 
         // OnLoad Callback

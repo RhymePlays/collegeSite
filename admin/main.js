@@ -7,67 +7,68 @@ initPage({
     }`
 });
 
-// Post News
-let newsTtlIO = document.getElementById("newsTtlIO");
-let newsDateIO = document.getElementById("newsDateIO");
-let newsBodyIO = document.getElementById("newsBodyIO");
-let newsImages = [];
-let newsBoardIO = document.getElementById("newsBoardIO");
-let newsImgCont = document.getElementById("newsImgCont");
+// Post Artcl
+let artclTtlIO = document.getElementById("artclTtlIO");
+let artclDateIO = document.getElementById("artclDateIO");
+let artclBodyIO = document.getElementById("artclBodyIO");
+let artclImages = [];
+let artclBoardIO = document.getElementById("artclBoardIO");
+let artclImgCont = document.getElementById("artclImgCont");
 
-function newsSetDate(){newsDateIO.value = new Date().toISOString().split(".")[0]}
-function newsImgContUpdate(){
-    newsImgCont.innerHTML = "";
-    for (index in newsImages){
-        newsImgCont.append(ce("img", {src: newsImages[index], imgID: index, onclick: function(){newsImages.splice(this.imgID, 1);newsImgContUpdate();}}));
+function artclSetDate(){artclDateIO.value = new Date().toISOString().split(".")[0]}
+function artclImgContUpdate(){
+    artclImgCont.innerHTML = "";
+    for (index in artclImages){
+        artclImgCont.append(ce("img", {src: artclImages[index], imgID: index, onclick: function(){artclImages.splice(this.imgID, 1);artclImgContUpdate();}}));
     }
 }
-function addNewsImgLink(){
+function addArtclImgLink(){
     createOP("Add Image Link", ce("div", {}, [
         ce("input", {id: "tempURLIO", placeholder: "URL"}),
         ce("div", {className: "rBtn", style: "margin-top: 10px", innerText: "Add", onclick: function(){
             let link=document.getElementById("tempURLIO").value;
-            if(link.length > 0){newsImages.push(link);newsImgContUpdate();document.getElementById("overPage").style.display = "none";}
+            if(link.length > 0){artclImages.push(link);artclImgContUpdate();document.getElementById("overPage").style.display = "none";}
         }})
     ]));
 }
-function addNewsImgFile(){
-    newsImages.push();
-    newsImgContUpdate();
+function addArtclImgFile(){
+    artclImages.push();
+    artclImgContUpdate();
 }
-function newsPost(){
-    let newsData = {
-        title: newsTtlIO.value,
-        date: new Date(newsDateIO.value).getTime(),
-        body: newsBodyIO.value,
-        images: newsImages
+function artclPost(){
+    let artclData = {
+        title: artclTtlIO.value,
+        boardID: artclBoardIO.value,
+        date: new Date(artclDateIO.value).getTime(),
+        body: artclBodyIO.value,
+        images: artclImages
     }
 
-    if (newsBoardIO.value && newsData.title && newsData.date && newsData.body){
-        db.collection(newsBoardIO.value).add(newsData).then((newsRef)=>{
+    if (artclBoardIO.value && artclData.title && artclData.date && artclData.body && artclBoardIO.value!="siteData"){
+        db.collection(artclBoardIO.value).add(artclData).then((artclRef)=>{
             createOP("Success", ce("div", {style: "display:flex;flex-direction:column;"}, [
-                ce("div", {style: "display:flex;align-items:center;margin-bottom:20px;"}, [matSym("check_circle", {style: "margin-right:5px"}), "News Posted Successfully!"]),
-                ce("div", {}, [`News Board: ${newsBoardIO.value}`]),
-                ce("div", {}, [`News ID: ${newsRef.id}`])
+                ce("div", {style: "display:flex;align-items:center;margin-bottom:20px;"}, [matSym("check_circle", {style: "margin-right:5px"}), "Article Posted Successfully!"]),
+                ce("div", {}, [`Article Board: ${artclBoardIO.value}`]),
+                ce("div", {}, [`Article ID: ${artclRef.id}`])
             ]));
             
             // Add to CommonDB
-            if (newsBoardIO.value == "news"){
-                newsData = Object.assign(newsData, {newsID: newsRef.id})
+            if (artclBoardIO.value == "Notice"){
+                artclData = Object.assign(artclData, {artclID: artclRef.id})
                 db.collection("siteData").doc("common").get().then((commonRef)=>{
                     let commonData = commonRef.data();
                     if(commonData != undefined){
-                        if ("newsSnippet" in commonData){
-                            if (commonData.newsSnippet.length >= 10){commonData.newsSnippet.pop();}
-                            commonData.newsSnippet.unshift(newsData);
+                        if ("noticeSnippet" in commonData){
+                            if (commonData.noticeSnippet.length >= 10){commonData.noticeSnippet.pop();}
+                            commonData.noticeSnippet.unshift(artclData);
                             db.collection("siteData").doc("common").set(commonData);
                         }
                         else{
-                            commonData["newsSnippet"] = [newsData];
+                            commonData["noticeSnippet"] = [artclData];
                             db.collection("siteData").doc("common").set(commonData);
                         }
                     }else{
-                        db.collection("siteData").doc("common").set({newsSnippet: [newsData]});
+                        db.collection("siteData").doc("common").set({noticeSnippet: [artclData]});
                     }
                 });
             }
@@ -75,31 +76,31 @@ function newsPost(){
         });
     }
 }
-newsSetDate();newsImgContUpdate();
+artclSetDate();artclImgContUpdate();
 
-// Delete News
-function newsDel(){
-    let newsDelIDIO = document.getElementById("newsDelIDIO");
-    let newsDelBoardIO = document.getElementById("newsDelBoardIO");
+// Delete Artcl
+function artclDel(){
+    let artclDelIDIO = document.getElementById("artclDelIDIO");
+    let artclDelBoardIO = document.getElementById("artclDelBoardIO");
     
-    if (newsDelBoardIO.value && newsDelIDIO.value){
+    if (artclDelBoardIO.value && artclDelIDIO.value){
         createOP("Done", ce("div", {style: "display:flex;flex-direction:column;"}, [
-            ce("div", {style: "display:flex;align-items:center;"}, [matSym("delete", {style: "margin-right:5px"}), "News Deletion Invoked!"]),
-            ce("div", {style: "margin-bottom:20px;"}, ["News will be removed if found."]),
-            ce("div", {}, [`News Board: ${newsDelBoardIO.value}`]),
-            ce("div", {}, [`News ID: ${newsDelIDIO.value}`])
+            ce("div", {style: "display:flex;align-items:center;"}, [matSym("delete", {style: "margin-right:5px"}), "Article Deletion Invoked!"]),
+            ce("div", {style: "margin-bottom:20px;"}, ["Article will be removed if found."]),
+            ce("div", {}, [`Article Board: ${artclDelBoardIO.value}`]),
+            ce("div", {}, [`Article ID: ${artclDelIDIO.value}`])
         ]));
 
-        db.collection(newsDelBoardIO.value).doc(newsDelIDIO.value).delete();
+        db.collection(artclDelBoardIO.value).doc(artclDelIDIO.value).delete();
 
         // Remove from CommonDB
-        if (newsDelBoardIO.value == "news"){
+        if (artclDelBoardIO.value == "Notice"){
             db.collection("siteData").doc("common").get().then((commonRef)=>{
                 let commonDBDataLatest = commonRef.data();
                 let hasChanged = false;
-                for (index in commonDBDataLatest.newsSnippet){
-                    if (commonDBDataLatest.newsSnippet[index].newsID == newsDelIDIO.value){
-                        commonDBDataLatest.newsSnippet.splice(index, 1);
+                for (index in commonDBDataLatest.noticeSnippet){
+                    if (commonDBDataLatest.noticeSnippet[index].artclID == artclDelIDIO.value){
+                        commonDBDataLatest.noticeSnippet.splice(index, 1);
                         hasChanged = true;
                     };
                 }

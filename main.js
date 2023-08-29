@@ -10,7 +10,7 @@ initPage({
     onCommonLoad: ()=>{
         document.getElementById("siteNameCont").innerText = commonDBData.siteName;
         initSldshw(commonDBData.pinnedPhotos);sldshwSetIndex(0);setInterval(sldshwNext, 5000);
-        initTopNews(commonDBData.newsSnippet);
+        initLatestNotice(commonDBData.noticeSnippet);
         initPinnedPpl(commonDBData.pinnedPeople);
         document.getElementById("shrtDesc").innerText = commonDBData.shortDescription;
     }
@@ -63,44 +63,38 @@ function sldshwPrev(){if (currentSldshowIndex-1 < 0){sldshwSetIndex(sldshwLength
 
 
 /* -------------------------------------------------- *\
-|---              Top News Related Code             ---|
+|---              Top Notice Related Code             ---|
 
-newsData = {
-    title: "",
-    date: 0,
-    body: "",
-    images: ["URL", "URL"]
-}
-createNewsCard(newsData)
+createArtclCard(artclData)
 
 ToDo: Show something if the Body is empty.
 
 \* -------------------------------------------------- */
-function createNewsCard(newsData){
+function createArtclCard(artclData){
     
-    let dateO = new Date(newsData.date);
+    let dateO = new Date(artclData.date);
 
     let body = ce("div", {className: "rCardBody"});
-    if (typeof(newsData.images) == "object"){
-        if(newsData.images.length > 0){
-            body.append(ce("img", {src: newsData.images[0]}));
+    if (typeof(artclData.images) == "object"){
+        if(artclData.images.length > 0){
+            body.append(ce("img", {src: artclData.images[0]}));
         }else{
-            body.innerText = newsData.body;
+            body.innerText = artclData.body;
         }
     }else{
-        body.innerText = newsData.body;
+        body.innerText = artclData.body;
     }
     
-    return ce("div", {className: "rCard", onclick: function(){location.href = `/news/?newsID=${newsData.newsID}`;}}, [
-        ce("div", {classList: "rCardTtl", innerText: newsData.title}),
+    return ce("div", {className: "rCard", onclick: function(){location.href = `/article/?boardID=Notice&artclID=${artclData.artclID}`;}}, [
+        ce("div", {classList: "rCardTtl", innerText: artclData.title}),
         ce("div", {className: "rCardDate"}, [matSym("schedule", {style: "margin-right:5px;"}), ce("span", {}, [ce("b", {}, ["Date: "]), `${dateO.getDate()}/${dateO.getMonth()}/${dateO.getFullYear()}`])]),
         body
     ]);
 }
-function initTopNews(newsArray){
-    document.getElementById("newsCardCont").innerHTML = "";
-    for (news in newsArray){
-        document.getElementById("newsCardCont").append(createNewsCard(newsArray[news]));
+function initLatestNotice(artclArray){
+    document.getElementById("ntcCardCont").innerHTML = "";
+    for (artcl in artclArray){
+        document.getElementById("ntcCardCont").append(createArtclCard(artclArray[artcl]));
     }
 };
 

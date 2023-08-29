@@ -26,43 +26,43 @@
     <!-- Page Specfic Additional Code -->
 
     <div class="rSect" style="margin-bottom: 0;">
-        <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">newspaper</span>Post News</span><span class="rBtn" id="newsPostBtn" onclick="javascript:newsPost()">Post</span></div>
+        <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">newspaper</span>Post Article</span><span class="rBtn" id="artclPostBtn" onclick="javascript:artclPost()">Post</span></div>
         <div class="rSectBody">
             <div class="rSectFormItem">
-                <span class="rSectFormTtl">Title</span><input id="newsTtlIO" type="text">
+                <span class="rSectFormTtl">Title</span><input id="artclTtlIO" type="text">
             </div>
             <div class="rSectFormItem">
-                <span class="rSectFormTtl">Date</span><input id="newsDateIO" type="datetime-local"><div id="newsSetTimeBtn" class="rBtn material-symbols-outlined" onclick="javascript:newsSetDate()">schedule</div>
+                <span class="rSectFormTtl">Date</span><input id="artclDateIO" type="datetime-local"><div id="artclSetTimeBtn" class="rBtn material-symbols-outlined" onclick="javascript:artclSetDate()">schedule</div>
             </div>
             <div class="rSectFormItem">
-                <span class="rSectFormTtl">Body</span><textarea id="newsBodyIO"></textarea>
+                <span class="rSectFormTtl">Body</span><textarea id="artclBodyIO"></textarea>
             </div>
             <div class="rSectFormItem">
                 <span class="rSectFormTtl">Images</span>
                 <div class="rSectFormImg">
-                    <div class="rBtn" onclick="javascript:addNewsImgLink()"><span class="material-symbols-outlined">add_link</span></div>
-                    <div class="rBtn" onclick="javascript:addNewsImgFile()"><span class="material-symbols-outlined">add_circle</span></div>
-                    <div id="newsImgCont"></div>
+                    <div class="rBtn" onclick="javascript:addArtclImgLink()"><span class="material-symbols-outlined">add_link</span></div>
+                    <div class="rBtn" onclick="javascript:addArtclImgFile()"><span class="material-symbols-outlined">add_circle</span></div>
+                    <div id="artclImgCont"></div>
                 </div>
             </div>
             <div class="rSectFormItem">
                 <span class="rSectFormTtl">Board</span>
-                <select id="newsBoardIO">
-                    <option value="news">News</option>
+                <select id="artclBoardIO">
+                    <option value="Notice">Notice</option>
                 </select>
             </div>
         </div>
     </div>
     <div class="rSect">
-        <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">delete</span>Delete News</span><span class="rBtn" onclick="javascript:newsDel()">Delete</span></div>
+        <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">delete</span>Delete Article</span><span class="rBtn" onclick="javascript:artclDel()">Delete</span></div>
         <div class="rSectBody">
             <div class="rSectFormItem">
-                <span class="rSectFormTtl">ID</span><input id="newsDelIDIO" type="text">
+                <span class="rSectFormTtl">ID</span><input id="artclDelIDIO" type="text">
             </div>
             <div class="rSectFormItem">
                 <span class="rSectFormTtl">Board</span>
-                <select id="newsDelBoardIO">
-                    <option value="news">News</option>
+                <select id="artclDelBoardIO">
+                    <option value="Notice">Notice</option>
                 </select>
             </div>
         </div>

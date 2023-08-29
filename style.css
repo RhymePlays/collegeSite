@@ -63,6 +63,7 @@
     margin: 10px;
     pointer-events: auto;
 }
+#sldshw .rBtn{border:0px;}
 
 
 
@@ -73,7 +74,7 @@
 
 
 
-#newsCardCont{display: flex;overflow-x: auto;}
+#ntcCardCont{display: flex;overflow-x: auto;}
 .rCard{
     min-width: 350px;max-width: 350px;min-height: 200px;max-height: 200px;padding: 12px;margin-right: 10px;border-radius: 12px;
     background: var(--color60Tint);background: linear-gradient(180deg, var(--color60Tint) 0%, var(--color60) 150%);cursor: pointer;
