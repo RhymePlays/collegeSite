@@ -15,4 +15,4 @@
     margin-left: 5px;
     transition: ease-in 100ms;
 }.rSectFormImg img:hover{opacity: 0.8;box-shadow: var(--color10) 0px 0px 0px 2px; transition: ease-out 200ms;}
-.rSectFormImg .rBtn{padding: 0;height: 70px;width: 70px;margin-left: 5px;display: flex;justify-content: center;align-items: center;}
+.rSectFormImg .rBtn{padding: 0;height: 70px;width: 70px;margin-left: 5px;display: flex;justify-content: center;align-items: center;border:0;}

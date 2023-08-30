@@ -12,7 +12,7 @@ initPage({
         initSldshw(commonDBData.pinnedPhotos);sldshwSetIndex(0);setInterval(sldshwNext, 5000);
         initLatestNotice(commonDBData.noticeSnippet);
         initPinnedPpl(commonDBData.pinnedPeople);
-        document.getElementById("shrtDesc").innerText = commonDBData.shortDescription;
+        document.getElementById("shrtDesc").append(parseMD(commonDBData.shortDescription));
     }
 });
 
@@ -79,10 +79,10 @@ function createArtclCard(artclData){
         if(artclData.images.length > 0){
             body.append(ce("img", {src: artclData.images[0]}));
         }else{
-            body.innerText = artclData.body;
+            body.append(parseMD(artclData.body));
         }
     }else{
-        body.innerText = artclData.body;
+        body.append(parseMD(artclData.body));
     }
     
     return ce("div", {className: "rCard", onclick: function(){location.href = `/article/?boardID=Notice&artclID=${artclData.artclID}`;}}, [

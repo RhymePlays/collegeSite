@@ -2,7 +2,7 @@ const boardID=new URLSearchParams(window.location.search).get("boardID");
 
 // allArtcl
 if (boardID){
-    initPage({pageName: `${boardID} Board`});
+    initPage({pageName: boardID});
 
     let allArtclIter = 0;
     let allArtclMaxIter = 99;
@@ -11,7 +11,7 @@ if (boardID){
         document.getElementById("artclCont").innerHTML = "";
         db.collection(boardID).orderBy("date", "desc").get().then((artclColl)=>{
             allArtclMaxIter = Math.ceil(artclColl.size/allArtclRange)
-            if (artclColl.size-1 <= from && from >= 0){
+            if (from <= artclColl.size-1 && from >= 0){
                 let i = from;
                 while (i < to){
                     if (typeof(artclColl.docs[i]) != "undefined"){

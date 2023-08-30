@@ -68,7 +68,11 @@ function ce(type, opts={}, children=[]){
     return elem;
 }
 function matSym(id, opts={}){return ce("span", Object.assign(opts, {className: "material-symbols-outlined", innerText: id}))}
-
+function escapeHTML(str){return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/'/g, "&#039;");}
+function parseMD(str){
+    try{return ce("div", {className: "md", parseSuccess: true, innerHTML: marked.parse(escapeHTML(str))});}
+    catch(e){return ce("div", {className: "md", parseSuccess: false, innerText: str});}
+}
 
 
 /* -------------------------------------------------- *\
@@ -400,7 +404,7 @@ function createArticle(artclData){
             ce("div", {className: "rSectGrayTxt"}, [matSym("schedule", {style: "margin-right: 5px;"}), ce("b", {innerText: "Date:", style: "margin-right: 5px;"}), ce("span", {innerText: `${dateObj.getDate()}/${dateObj.getMonth()}/${dateObj.getFullYear()}`})]),
             ce("div", {className: "rSectGrayTxt"}, [matSym("fingerprint", {style: "margin-right: 5px;"}), ce("b", {innerText: "WebID:", style: "margin-right: 5px;"}), ce("span", {innerText: artclData.artclID})]),
         ]),
-        ce("div", {className: "artclDiv artclBody", innerText: artclData.body}),
+        ce("div", {className: "artclDiv artclBody"}, [parseMD(artclData.body)]),
         ce("div", {className: "artclDiv"}, [
             ce("hr"),
             ce("div", {className: "rSectGrayTxt"}, [matSym("photo", {style: "margin-right: 5px;"}), ce("span", {innerText: "Images"})]),
@@ -443,7 +447,7 @@ function createPrsnCard(prsnData){
             ce("div", {className: "prsnCardName", innerText: prsnData.name}),
             ce("div", {className: "prsnCardPost"}, [matSym("work", {style: "margin-right:5px;"}), ce("span", {}, ["Post:", ce("b",{innerText: prsnData.post, style: "margin-left:5px"})])]),
             ce("img", {className: "prsnCardImg", src: prsnData.image}),
-            ce("div", {className: "prsnCardBody", innerText: prsnData.body}),
+            ce("div", {className: "prsnCardBody"}, [parseMD(prsnData.body)]),
             ce("div", {className: "prsnCardID"}, [matSym("fingerprint", {style: "margin-right:5px;"}), ce("span", {}, [ce("b", {}, ["WebID: "]), prsnData.prsnID])]),
         ])
     ]);

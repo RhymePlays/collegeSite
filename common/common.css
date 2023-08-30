@@ -7,7 +7,7 @@ html{font-family: 'Montserrat', 'Noto Sans', 'Roboto', Arial, Helvetica, sans-se
 input{width: 100%;height: 40px;font-size: 18px;font-family: "Montserrat", "Roboto", Arial, Helvetica, sans-serif;color: white;fill: white;background: var(--color60Tint);border: none;border-radius: 10px;padding: 0px 10px;}
 textarea{width: 100%;height: 100px;font-size: 18px;font-family: "Montserrat", "Roboto", Arial, Helvetica, sans-serif;color: white;fill: white;background: var(--color60Tint);border: none;border-radius: 10px;padding: 0px 10px;}
 select{width: 100%;height: 40px;font-size: 18px;font-family: "Montserrat", "Roboto", Arial, Helvetica, sans-serif;color: white;fill: white;background: var(--color60Tint);border: none;border-radius: 10px;padding: 0px 10px;}
-hr{margin: 10px 15px;border-width: 1px;color: var(--color30Shade);border-style:solid;border-radius: 10px;}
+hr{margin: 10px 15px;border: 1px solid;color: var(--color30Shade);border-radius: 10px;}
 
 /* Custom */
 .frostFX{
@@ -38,8 +38,9 @@ hr{margin: 10px 15px;border-width: 1px;color: var(--color30Shade);border-style:s
     margin: 0px 5px;
 }
 
+
 /* artclCard */
-.artcl{border: solid #ffffff25 2px;border-radius: 12px;margin: 10px 5px;background-color: var(--color60);}
+.artcl{border: solid #ffffff25 2px;border-radius: 12px;margin: 20px 5px;background-color: var(--color60);}
 .artclTop{
     padding: 12px;
     background-color:var(--color60Tint);
@@ -91,6 +92,25 @@ hr{margin: 10px 15px;border-width: 1px;color: var(--color30Shade);border-style:s
 #subNavImg{max-width: 100%;min-width: 100%;max-height: 250px;min-height: 250px;}
 #subNavTxt{margin-top: 30px;font-size: 35px;font-weight: 600;text-align: center;color: var(--color10);}
 #subNavSubTxt{margin-top: 10px;margin-bottom: 30px;font-size: 25px;text-align: center;color: var(--color10Tint);}
+
+
+/* Markdown */
+.md img{width: 100%;}
+.md hr{margin: 18px 0px;}
+a{color: var(--color10);text-decoration: none;}
+p:first-child{margin-top: 0;}p:last-child{margin-bottom: 0;}
+ul, ol{padding-left: 18px;}li{margin-top: 10px;}li::marker{color: var(--color30Shade);}
+code, pre{background-color: var(--color60Tint);padding: 3px 5px;border-radius: 5px;font-family: "Noto Sans", "Montserrat", Arial, Helvetica, sans-serif;}
+h1, h2, h3, h4, h5, h6{margin: 15px 0px;}
+h1, h2{border-bottom: 1px solid;border-color: #ffffff25;padding-bottom: 10px;}
+h5, h6{color: var(--color30Shade);}
+table{border-collapse: collapse;}
+th, td{
+    padding: 6px 8px;
+    border: 2px solid;
+    border-color: #ffffff25;
+}th{color: var(--color10);font-weight: bold;background-color: var(--color60Tint);}
+tr:nth-child(2n){background-color: var(--color60Tint);}
 
 
 /* ftr */
