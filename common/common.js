@@ -38,6 +38,52 @@ var navData = [
     {text: "Option 5", subOpts: [{}]},
     {text: "Option 6", subOpts: [{}]},
 ];
+var ftrData = [
+    {
+        text: "Section Title 1",
+        matSym: "photo",
+        subOpts: [
+            {
+                text: "Ftr Link 1",
+                matSym: "link",
+                link: "#FtrLink1"
+            },
+            {
+                text: "Ftr Link 2",
+                iconUrl: "/logo.png",
+                link: "#FtrLink2"
+            },
+            {
+                text: "Ftr Link 3",
+                link: "#FtrLink3"
+            },
+        ]
+    },
+    {
+        text: "Section Title 2",
+        iconUrl: "/logo.png",
+        subOpts: []
+    },
+    {
+        text: "Section Title 3",
+        subOpts: [
+            {
+                text: "Ftr Link 4",
+                matSym: "open_in_new",
+                link: "#FtrLink4"
+            },
+        ]
+    },
+    {
+        subOpts: [
+            {
+                text: "Ftr Link 5",
+                iconUrl: "/logo.png",
+                link: "#FtrLink5"
+            },
+        ]
+    }
+];
 
 
 /* -------------------------------------------------- *\
@@ -215,8 +261,7 @@ function createNav(navData, forceMobile=false){
         navCont.append(nav, drwrBack, drwr, css);
     }else{
 
-        let navLn1 = ce("div");
-        navLn1.id = "navLn1";
+        let navLn1 = ce("div", {id: "navLn1"});
     
         let navLn2 = ce("div");
         navLn2.id = "navLn2";
@@ -477,14 +522,109 @@ function createPrsnCard(prsnData){
 /* -------------------------------------------------- *\
 |---           HELP RELATING THE Footer.            ---|
 
-ftrData = {
-}
+ftrData = [
+    {
+        text: "Section Title 1",
+        matSym: "photo",
+        subOpts: [
+            {
+                text: "Ftr Link 1",
+                matSym: "link",
+                link: "#FtrLink1"
+            },
+            {
+                text: "Ftr Link 2",
+                iconUrl: "/logo.png",
+                link: "#FtrLink2"
+            },
+            {
+                text: "Ftr Link 3",
+                link: "#FtrLink3"
+            },
+        ]
+    },
+    {
+        text: "Section Title 2",
+        iconUrl: "/logo.png",
+        subOpts: []
+    },
+    {
+        text: "Section Title 3",
+        subOpts: [
+            {
+                text: "Ftr Link 4",
+                matSym: "open_in_new",
+                link: "#FtrLink4"
+            },
+        ]
+    },
+    {
+        subOpts: [
+            {
+                text: "Ftr Link 5",
+                iconUrl: "/logo.png",
+                link: "#FtrLink5"
+            },
+        ]
+    }
+];
 createFtr(ftrData)
 
 \* -------------------------------------------------- */
 
 function createFtr(ftrData){
+    let ftrCont = document.getElementById("ftrCont");
+    ftrCont.innerHTML = "";
 
+    let ftrColCont = ce("div", {className: "ftrColCont"});
+    for (ftrColIndex in ftrData){
+        let ftrCol = ce("div", {className: "ftrCol"});
+
+        if (ftrData[ftrColIndex].text){
+            if (ftrData[ftrColIndex].matSym){
+                ftrCol.append(ce("div", {className: "ftrColTtl"}, [
+                    ce("span", {className: "material-symbols-outlined", style: "margin-right: 5px;", innerText: ftrData[ftrColIndex].matSym}),
+                    ce("span", {innerText: ftrData[ftrColIndex].text})
+                ]));
+            }
+            else if(ftrData[ftrColIndex].iconUrl){
+                ftrCol.append(ce("div", {className: "ftrColTtl"}, [
+                    ce("img", {src: ftrData[ftrColIndex].iconUrl}),
+                    ce("span", {innerText: ftrData[ftrColIndex].text})
+                ]));
+            }
+            else{
+                ftrCol.append(ce("div", {className: "ftrColTtl"}, [
+                    ce("span", {innerText: ftrData[ftrColIndex].text})
+                ]));
+            }
+        }else{
+            ftrCol.append(ce("div", {className: "ftrColTtl"}));
+        }
+
+        for (ftrItemIndex in ftrData[ftrColIndex].subOpts){
+            if (ftrData[ftrColIndex].subOpts[ftrItemIndex].matSym){
+                ftrCol.append(ce("a", {className: "rSectGrayTxt", href: ftrData[ftrColIndex].subOpts[ftrItemIndex].link}, [
+                    ce("span", {className: "material-symbols-outlined", style: "margin-right: 5px;", innerText: ftrData[ftrColIndex].subOpts[ftrItemIndex].matSym}),
+                    ce("span", {innerText: ftrData[ftrColIndex].subOpts[ftrItemIndex].text})
+                ]));
+            }
+            else if(ftrData[ftrColIndex].subOpts[ftrItemIndex].iconUrl){
+                ftrCol.append(ce("a", {className: "rSectGrayTxt", href: ftrData[ftrColIndex].subOpts[ftrItemIndex].link}, [
+                    ce("img", {src: ftrData[ftrColIndex].subOpts[ftrItemIndex].iconUrl}),
+                    ce("span", {innerText: ftrData[ftrColIndex].subOpts[ftrItemIndex].text})
+                ]));
+            }else{
+                ftrCol.append(ce("a", {className: "rSectGrayTxt", href: ftrData[ftrColIndex].subOpts[ftrItemIndex].link}, [
+                    ce("span", {innerText: ftrData[ftrColIndex].subOpts[ftrItemIndex].text})
+                ]));
+            }
+        }
+        
+        ftrColCont.append(ftrCol);
+    }
+
+    ftrCont.append(ce("div", {className: "pageCenA"}, [ce("div", {className: "pageCenB"}, [ftrColCont])]));
 }
 
 
@@ -524,7 +664,7 @@ function initPage(arg={pageName: undefined, subNavImage: undefined, onCommonLoad
         createNav(commonDBData.navData || navData);
     
         // Load Footer
-        createFtr(commonDBData.ftrData);
+        createFtr(commonDBData.ftrData || ftrData);
         
         // Load SubNav And Set Page Title
         createSubNav({image: arg.subNavImage || Object(Object(commonDBData.pinnedPhotos)[Math.floor(Math.random() * (Object(commonDBData.pinnedPhotos).length)) || 0]).url, text: commonDBData.siteName || siteName, subText: arg.pageName || ""});

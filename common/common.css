@@ -119,6 +119,16 @@ th, td{
 tr:nth-child(2n){background-color: var(--color60Tint);}
 
 /* ftr */
-/* html{height: 100%;}
+html{height: 100%;}
 body{display: flex;flex-direction: column;min-height: 100%;}
-#ftrCont{margin-top: auto;width: 100%;height: 200px;background-color: ##ffccdd;} */
+#ftrCont{margin-top: auto;width: 100%;padding-top: 25px;}
+
+.ftrColCont{display: flex;flex-wrap: wrap;}
+.ftrCol{display: flex;flex-direction: column;margin: 20px;}
+
+.ftrColTtl{color:var(--color10);display:flex;align-items:center;margin-bottom: 8px;font-size: 20px;font-weight: 600;min-height: 22px;}
+.ftrColTtl img{width: 24px;width: 24px;margin-right: 5px;object-fit: cover;}
+
+.ftrCol .rSectGrayTxt{margin-top: 6px;transition: ease-in 150ms;}
+.ftrCol .rSectGrayTxt:hover{font-weight: 600; transition: ease-out 200ms;color: var(--color10)}
+.ftrCol .rSectGrayTxt img{width: 24px;width: 24px;margin-right: 5px;object-fit: cover;}
