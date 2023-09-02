@@ -8,7 +8,7 @@ initPage({
         .rSectTitle{font-size:20px}
     }`,
     onCommonLoad: ()=>{
-        document.getElementById("siteNameCont").innerText = commonDBData.siteName;
+        document.getElementById("siteNameCont").innerText = commonDBData.siteName || siteName;
         initSldshw(commonDBData.pinnedPhotos);sldshwSetIndex(0);setInterval(sldshwNext, 5000);
         initLatestNotice(commonDBData.noticeSnippet);
         initPinnedPpl(commonDBData.pinnedPeople);
@@ -16,9 +16,7 @@ initPage({
     }
 });
 
-/* -------------------------------------------------- *\
-|---             Slideshow Related Code             ---|
-\* -------------------------------------------------- */
+
 let currentSldshowIndex = 0
 let sldshwLength = 0
 function initSldshw(sldshwData){
@@ -61,19 +59,8 @@ function sldshwNext(){if (currentSldshowIndex+1 >= sldshwLength){sldshwSetIndex(
 function sldshwPrev(){if (currentSldshowIndex-1 < 0){sldshwSetIndex(sldshwLength-1);}else{sldshwSetIndex(currentSldshowIndex-1);}}
 
 
-
-/* -------------------------------------------------- *\
-|---              Top Notice Related Code             ---|
-
-createArtclCard(artclData)
-
-ToDo: Show something if the Body is empty.
-
-\* -------------------------------------------------- */
 function createArtclCard(artclData){
-    
     let dateO = new Date(artclData.date);
-
     let body = ce("div", {className: "rCardBody"});
     if (typeof(artclData.images) == "object"){
         if(artclData.images.length > 0){
@@ -84,7 +71,6 @@ function createArtclCard(artclData){
     }else{
         body.append(parseMD(artclData.body));
     }
-    
     return ce("div", {className: "rCard", onclick: function(){location.href = `/article/?boardID=Notice&artclID=${artclData.artclID}`;}}, [
         ce("div", {classList: "rCardTtl", innerText: artclData.title}),
         ce("div", {className: "rCardDate"}, [matSym("schedule", {style: "margin-right:5px;"}), ce("span", {}, [ce("b", {}, ["Date: "]), `${dateO.getDate()}/${dateO.getMonth()}/${dateO.getFullYear()}`])]),
@@ -99,10 +85,6 @@ function initLatestNotice(artclArray){
 };
 
 
-
-/* -------------------------------------------------- *\
-|---              prsnCard Related Code              ---|
-\* -------------------------------------------------- */
 function initPinnedPpl(pplArray){
     document.getElementById("prsnCardCont").innerText = "";
     for (index in pplArray){

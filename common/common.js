@@ -425,6 +425,24 @@ function createArticle(artclData){
     ]);
 }
 
+function createArtclCard(artclData){
+    let dateO = new Date(artclData.date);
+    let body = ce("div", {className: "rCardBody"});
+    if (typeof(artclData.images) == "object"){
+        if(artclData.images.length > 0){
+            body.append(ce("img", {src: artclData.images[0]}));
+        }else{
+            body.append(parseMD(artclData.body));
+        }
+    }else{
+        body.append(parseMD(artclData.body));
+    }
+    return ce("div", {className: "rCard", onclick: function(){location.href = `/article/?boardID=Notice&artclID=${artclData.artclID}`;}}, [
+        ce("div", {classList: "rCardTtl", innerText: artclData.title}),
+        ce("div", {className: "rCardDate"}, [matSym("schedule", {style: "margin-right:5px;"}), ce("span", {}, [ce("b", {}, ["Date: "]), `${dateO.getDate()}/${dateO.getMonth()}/${dateO.getFullYear()}`])]),
+        body
+    ]);
+}
 
 
 /* -------------------------------------------------- *\
@@ -434,7 +452,8 @@ prsnData = {
     name: "",
     post: "",
     image: "",
-    body: ""
+    body: "",
+    prsnID: ""
 }
 createPrsnCard(prsnData)
 

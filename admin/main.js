@@ -1,3 +1,5 @@
+var storageRef = firebase.storage().ref();
+
 // Common
 initPage({
     pageName: "Admin Page",
@@ -19,7 +21,15 @@ function artclSetDate(){artclDateIO.value = new Date().toISOString().split(".")[
 function artclImgContUpdate(){
     artclImgCont.innerHTML = "";
     for (index in artclImages){
-        artclImgCont.append(ce("img", {src: artclImages[index], imgID: index, onclick: function(){artclImages.splice(this.imgID, 1);artclImgContUpdate();}}));
+        artclImgCont.append(ce("img", {
+            src: artclImages[index].url,
+            imgID: index,
+            onclick: function(){
+                if (artclImages[this.imgID].storagePath){storageRef.child(artclImages[this.imgID].storagePath).delete()};
+                artclImages.splice(this.imgID, 1);
+                artclImgContUpdate();
+            }
+        }));
     }
 }
 function addArtclImgLink(){
@@ -27,22 +37,44 @@ function addArtclImgLink(){
         ce("input", {id: "tempURLIO", placeholder: "URL"}),
         ce("div", {className: "rBtn", style: "margin-top: 10px", innerText: "Add", onclick: function(){
             let link=document.getElementById("tempURLIO").value;
-            if(link.length > 0){artclImages.push(link);artclImgContUpdate();document.getElementById("overPage").style.display = "none";}
+            if(link.length > 0){artclImages.push({url: link, storagePath: false});artclImgContUpdate();document.getElementById("overPage").style.display = "none";}
         }})
     ]));
 }
 function addArtclImgFile(){
-    artclImages.push();
-    artclImgContUpdate();
+    ce("input", {type: "file", multiple: "true", accept: ".png,.jpg,.jpeg,.webp", onchange: function(inputArg){
+        let imgFiles = inputArg.target.files;
+        for (index in imgFiles){
+            if(typeof(imgFiles[index]) == "object"){
+                storageRef.child(`articleImages/${(new Date().getTime()).toString(16).toUpperCase()}${(Math.floor(Math.random() * 10000)).toString(16).toUpperCase()}_${index}`).put(imgFiles[index]).then((gsFileRef) => {
+                    gsFileRef.ref.getDownloadURL().then((url) => {
+
+                        artclImages.push({url: url, storagePath: gsFileRef.ref.fullPath});
+                        artclImgContUpdate();
+                    
+                    });
+                });
+            }
+        }
+    }}).click();
 }
 function artclPost(){
+    let imageUrls = [];
+    let storageDependencies = [];
+    for (index in artclImages){
+        imageUrls.push(artclImages[index].url);
+        if (artclImages[index].storagePath){storageDependencies.push(artclImages[index].storagePath);}
+    }
+
     let artclData = {
         title: artclTtlIO.value,
         boardID: artclBoardIO.value,
         date: new Date(artclDateIO.value).getTime(),
         body: artclBodyIO.value,
-        images: artclImages
+        images: imageUrls,
+        storageDeps: storageDependencies
     }
+    artclImages=[];artclImgContUpdate();
 
     if (artclBoardIO.value && artclData.title && artclData.date && artclData.body && artclBoardIO.value!="siteData"){
         db.collection(artclBoardIO.value).add(artclData).then((artclRef)=>{
@@ -84,29 +116,36 @@ function artclDel(){
     let artclDelBoardIO = document.getElementById("artclDelBoardIO");
     
     if (artclDelBoardIO.value && artclDelIDIO.value){
-        createOP("Done", ce("div", {style: "display:flex;flex-direction:column;"}, [
-            ce("div", {style: "display:flex;align-items:center;"}, [matSym("delete", {style: "margin-right:5px"}), "Article Deletion Invoked!"]),
-            ce("div", {style: "margin-bottom:20px;"}, ["Article will be removed if found."]),
-            ce("div", {}, [`Article Board: ${artclDelBoardIO.value}`]),
-            ce("div", {}, [`Article ID: ${artclDelIDIO.value}`])
-        ]));
-
-        db.collection(artclDelBoardIO.value).doc(artclDelIDIO.value).delete();
-
-        // Remove from CommonDB
-        if (artclDelBoardIO.value == "Notice"){
-            db.collection("siteData").doc("common").get().then((commonRef)=>{
-                let commonDBDataLatest = commonRef.data();
-                let hasChanged = false;
-                for (index in commonDBDataLatest.noticeSnippet){
-                    if (commonDBDataLatest.noticeSnippet[index].artclID == artclDelIDIO.value){
-                        commonDBDataLatest.noticeSnippet.splice(index, 1);
-                        hasChanged = true;
-                    };
+        db.collection(artclDelBoardIO.value).doc(artclDelIDIO.value).get().then((artclRef)=>{
+            if(artclRef.exists){
+                let deps = artclRef.data().storageDeps;
+                db.collection(artclDelBoardIO.value).doc(artclDelIDIO.value).delete();
+                for (depIndex in deps){
+                    storageRef.child(deps[depIndex]).delete();
                 }
-                if (hasChanged){db.collection("siteData").doc("common").set(commonDBDataLatest);}
-            });
-        }
+
+                createOP("Done", ce("div", {style: "display:flex;flex-direction:column;"}, [
+                    ce("div", {style: "display:flex;align-items:center;margin-bottom:20px;"}, [matSym("delete", {style: "margin-right:5px"}), "Article Deleted Successfully!"]),
+                    ce("div", {}, [`Article Board: ${artclDelBoardIO.value}`]),
+                    ce("div", {}, [`Article ID: ${artclDelIDIO.value}`])
+                ]));
+
+                // Remove from CommonDB
+                if (artclDelBoardIO.value == "Notice"){
+                    db.collection("siteData").doc("common").get().then((commonRef)=>{
+                        let commonDBDataLatest = commonRef.data();
+                        let hasChanged = false;
+                        for (index in commonDBDataLatest.noticeSnippet){
+                            if (commonDBDataLatest.noticeSnippet[index].artclID == artclDelIDIO.value){
+                                commonDBDataLatest.noticeSnippet.splice(index, 1);
+                                hasChanged = true;
+                            };
+                        }
+                        if (hasChanged){db.collection("siteData").doc("common").set(commonDBDataLatest);}
+                    });
+                }
+            }
+        });
     }
 }
 
@@ -119,7 +158,15 @@ let photoAddImgCont = document.getElementById("photoAddImgCont");
 function photosImgContUpdate(){
     photoAddImgCont.innerHTML = "";
     for (index in addPhotosImages){
-        photoAddImgCont.append(ce("img", {src: addPhotosImages[index], imgID: index, onclick: function(){addPhotosImages.splice(this.imgID, 1);photosImgContUpdate();}}));
+        photoAddImgCont.append(ce("img", {
+            src: addPhotosImages[index].url,
+            imgID: index,
+            onclick: function(){
+                if (addPhotosImages[this.imgID].storagePath){storageRef.child(addPhotosImages[this.imgID].storagePath).delete()};
+                addPhotosImages.splice(this.imgID, 1);
+                photosImgContUpdate();
+            }
+        }));
     }
 }
 function addPhotoImgLink(){
@@ -127,21 +174,47 @@ function addPhotoImgLink(){
         ce("input", {id: "tempURLIO", placeholder: "URL"}),
         ce("div", {className: "rBtn", style: "margin-top: 10px", innerText: "Add", onclick: function(){
             let link=document.getElementById("tempURLIO").value;
-            if(link.length > 0){addPhotosImages.push(link);photosImgContUpdate();document.getElementById("overPage").style.display = "none";}
+            if(link.length > 0){addPhotosImages.push({url: link, storagePath: false});photosImgContUpdate();document.getElementById("overPage").style.display = "none";}
         }})
     ]));
 }
+function addPhotoImgFile(){
+    ce("input", {type: "file", multiple: "true", accept: ".png,.jpg,.jpeg,.webp", onchange: function(inputArg){
+        let imgFiles = inputArg.target.files;
+        for (index in imgFiles){
+            if(typeof(imgFiles[index]) == "object"){
+                storageRef.child(`photos/${(new Date().getTime()).toString(16).toUpperCase()}${(Math.floor(Math.random() * 10000)).toString(16).toUpperCase()}_${index}`).put(imgFiles[index]).then((gsFileRef) => {
+                    gsFileRef.ref.getDownloadURL().then((url) => {
+
+                        addPhotosImages.push({url: url, storagePath: gsFileRef.ref.fullPath});
+                        photosImgContUpdate();
+                    
+                    });
+                });
+            }
+        }
+    }}).click();
+}
 function photoAdd(){
+    let imageUrls = [];
+    let storageDependencies = [];
+    for (index in addPhotosImages){
+        imageUrls.push(addPhotosImages[index].url);
+        if (addPhotosImages[index].storagePath){storageDependencies.push(addPhotosImages[index].storagePath);}
+    }
+
     if (addPhotosImages.length > 0){
         let retVal = [];
         for (index in addPhotosImages){
             retVal.unshift({
-                url: addPhotosImages[index],
+                url: imageUrls[index],
                 imgID: `${(new Date().getTime()).toString(16).toUpperCase()}${(Math.floor(Math.random() * 10000)).toString(16).toUpperCase()}_${index}`,
                 date: new Date().getTime(),
-                caption: document.getElementById("photoAddCaptIO").value
+                caption: document.getElementById("photoAddCaptIO").value,
+                storageDeps: storageDependencies
             });
         }
+        addPhotosImages=[];photosImgContUpdate();
     
         db.collection("siteData").doc("photos").get().then((photosRef)=>{
             let photosDocData = photosRef.data();
@@ -180,6 +253,10 @@ function photoDel(delPhotoID=undefined){
             let hasChanged = false;
             for (index in photosDocData.allPhotos){
                 if (photosDocData.allPhotos[index].imgID == delPhotoIDIO){
+                    for (depIndex in photosDocData.allPhotos[index].storageDeps){
+                        storageRef.child(photosDocData.allPhotos[index].storageDeps[depIndex]).delete();
+                    }
+
                     photosDocData.allPhotos.splice(index, 1);
                     hasChanged = true;
                 };
@@ -273,27 +350,65 @@ let prsnAddBodyIO = document.getElementById("prsnAddBodyIO");
 function prsnImgContUpdate(){
     prsnAddImgCont.innerHTML = "";
     for (index in prsnAddImages){
-        prsnAddImgCont.append(ce("img", {src: prsnAddImages[index], imgID: index, onclick: function(){prsnAddImages.splice(this.imgID, 1);prsnImgContUpdate();}}));
+        prsnAddImgCont.append(ce("img", {
+            src: prsnAddImages[index].url,
+            imgID: index,
+            onclick: function(){
+                if (prsnAddImages[this.imgID].storagePath){storageRef.child(prsnAddImages[this.imgID].storagePath).delete()};
+                prsnAddImages.splice(this.imgID, 1);
+                prsnImgContUpdate();
+            }
+        }));
     }
 }
 function addPrsnImgLink(){
-    createOP("Add Image Link", ce("div", {}, [        
-        ce("input", {id: "tempURLIO", placeholder: "URL"}),
-        ce("div", {className: "rBtn", style: "margin-top: 10px", innerText: "Add", onclick: function(){
-            let link=document.getElementById("tempURLIO").value;
-            if(link.length > 0){prsnAddImages.push(link);prsnImgContUpdate();document.getElementById("overPage").style.display = "none";}
-        }})
-    ]));
+    if (prsnAddImages.length <= 0){
+        createOP("Add Image Link", ce("div", {}, [        
+            ce("input", {id: "tempURLIO", placeholder: "URL"}),
+            ce("div", {className: "rBtn", style: "margin-top: 10px", innerText: "Add", onclick: function(){
+                let link=document.getElementById("tempURLIO").value;
+                if(link.length > 0){prsnAddImages.push({url: link, storagePath: false});prsnImgContUpdate();document.getElementById("overPage").style.display = "none";}
+            }})
+        ]));
+    }
+}
+function addPrsnImgFile(){
+    if (prsnAddImages.length <= 0){
+        ce("input", {type: "file", accept: ".png,.jpg,.jpeg,.webp", onchange: function(inputArg){
+            let imgFiles = inputArg.target.files;
+            for (index in imgFiles){
+                if(typeof(imgFiles[index]) == "object"){
+                    storageRef.child(`peopleImages/${(new Date().getTime()).toString(16).toUpperCase()}${(Math.floor(Math.random() * 10000)).toString(16).toUpperCase()}_${index}`).put(imgFiles[index]).then((gsFileRef) => {
+                        gsFileRef.ref.getDownloadURL().then((url) => {
+    
+                            prsnAddImages.push({url: url, storagePath: gsFileRef.ref.fullPath});
+                            prsnImgContUpdate();
+                        
+                        });
+                    });
+                }
+            }
+        }}).click();
+    }
 }
 function prsnAdd(){
+    let imageUrls = [];
+    let storageDependencies = [];
+    for (index in prsnAddImages){
+        imageUrls.push(prsnAddImages[index].url);
+        if (prsnAddImages[index].storagePath){storageDependencies.push(prsnAddImages[index].storagePath);}
+    }
+
     if ((prsnAddImages.length > 0) && prsnAddNameIO.value && prsnAddPostIO.value && prsnAddBodyIO.value){
         prsnData = {
             prsnID: `${(new Date().getTime()).toString(16).toUpperCase()}_${(Math.floor(Math.random() * 10000)).toString(16).toUpperCase()}`,
             name: prsnAddNameIO.value,
             post: prsnAddPostIO.value,
-            image: prsnAddImages[0],
-            body: prsnAddBodyIO.value
+            image: imageUrls[0],
+            body: prsnAddBodyIO.value,
+            storageDeps: storageDependencies
         }
+        prsnAddImages=[];prsnImgContUpdate();
     
         db.collection("siteData").doc("people").get().then((peopleRef)=>{
             let peopleDocData = peopleRef.data();
@@ -329,6 +444,10 @@ function prsnDel(prsnDelID=undefined){
             let hasChanged = false;
             for (index in peopleDocData.allPeople){
                 if (peopleDocData.allPeople[index].prsnID == prsnDelIDIO){
+                    for (depIndex in peopleDocData.allPeople[index].storageDeps){
+                        storageRef.child(peopleDocData.allPeople[index].storageDeps[depIndex]).delete();
+                    }
+
                     peopleDocData.allPeople.splice(index, 1);
                     hasChanged = true;
                 };
