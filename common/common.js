@@ -77,9 +77,9 @@ var ftrData = [
     {
         subOpts: [
             {
-                text: "Ftr Link 5",
+                text: "Admin Page",
                 iconUrl: "/logo.png",
-                link: "#FtrLink5"
+                link: "/admin"
             },
         ]
     }
@@ -237,7 +237,7 @@ function createNav(navData, forceMobile=false){
             .rNavBtn{padding: 8px 0px;margin: 2px 12px;border-radius: 10px;transition: ease-in 100ms;}
             .rNavBtn:hover{color: var(--color10);background: #00000040;padding: 8px 10px;margin: 2px 2px;transition: ease-out 200ms;}
             #drwr{position: absolute;top: 0;bottom: 0;left: 0;right: 80px;display: none;flex-direction: column;text-shadow: var(--color60) 0px 0px 10px;}
-            #drwrTop{color: var(--color30);display: flex;align-items: center;justify-content: space-between;padding: 5px 10px;font-weight: 600;font-size: 25px;text-shadow: var(--color30) 0px 0px 10px;}
+            #drwrTop{color: var(--color30);display: flex;align-items: center;justify-content: space-between;padding: 5px 10px;font-weight: 600;font-size: 25px;}
             #drwrTop .material-symbols-outlined{font-size: 40px;}
             #drwrBody{display: flex;flex-direction: column;overflow-y: scroll;overflow-x: none;}
             #drwrBody .material-symbols-outlined{font-size: 14px;max-width: 14px;margin-right: 5px;position: relative;top: 2px;}
@@ -245,11 +245,12 @@ function createNav(navData, forceMobile=false){
             .drwrOpts{font-weight: 600;font-size: 16px;color: var(--color30);}
             .drwrSubOpts{font-weight: 400;font-size: 14px;color: var(--color30Shade);margin-left: 25px;}
             #navCont{z-index:3;position: fixed;top: 0px;width: 100%;text-shadow: var(--color60) 0px 0px 10px, var(--color60) 0px 0px 5px;}
-            #nav{color: var(--color30);text-shadow: var(--color30) 0px 0px 10px;display: flex;align-items: center;justify-content: center;height: 60px;padding: 0px 10px;border-radius: 0px 0px 25px 25px;}
+            #nav{color: var(--color30);display: flex;align-items: center;justify-content: center;height: 60px;padding: 0px 10px;border-radius: 0px 0px 25px 25px;}
             #nav .material-symbols-outlined{font-size: 30px;}
             #navPiCont{position: relative;top: 15px;width: 100%;display: flex;justify-content: center;}
             #navPi{height:80px;width:80px;border-radius: 50%;background: linear-gradient(180deg, #F5F5F5 0%, #a5a5a5 100%);box-shadow: var(--color60) 0px 0px 20px 0px, var(--color60) 0px 0px 5px 0px;}
             #navPi img{width:inherit;height:inherit;border-radius:50%;object-fit:contain;}
+            #subNavCont{margin-top:30px}
         `);
 
         let drwrBack = ce("drwrBack");
@@ -583,7 +584,7 @@ function createFtr(ftrData){
         if (ftrData[ftrColIndex].text){
             if (ftrData[ftrColIndex].matSym){
                 ftrCol.append(ce("div", {className: "ftrColTtl"}, [
-                    ce("span", {className: "material-symbols-outlined", style: "margin-right: 5px;", innerText: ftrData[ftrColIndex].matSym}),
+                    ce("span", {className: "material-symbols-outlined", style: "margin-right:5px;", innerText: ftrData[ftrColIndex].matSym}),
                     ce("span", {innerText: ftrData[ftrColIndex].text})
                 ]));
             }
@@ -605,7 +606,7 @@ function createFtr(ftrData){
         for (ftrItemIndex in ftrData[ftrColIndex].subOpts){
             if (ftrData[ftrColIndex].subOpts[ftrItemIndex].matSym){
                 ftrCol.append(ce("a", {className: "rSectGrayTxt", href: ftrData[ftrColIndex].subOpts[ftrItemIndex].link}, [
-                    ce("span", {className: "material-symbols-outlined", style: "margin-right: 5px;", innerText: ftrData[ftrColIndex].subOpts[ftrItemIndex].matSym}),
+                    ce("span", {className: "material-symbols-outlined", style: "margin-right:5px;", innerText: ftrData[ftrColIndex].subOpts[ftrItemIndex].matSym}),
                     ce("span", {innerText: ftrData[ftrColIndex].subOpts[ftrItemIndex].text})
                 ]));
             }
@@ -624,7 +625,13 @@ function createFtr(ftrData){
         ftrColCont.append(ftrCol);
     }
 
-    ftrCont.append(ce("div", {className: "pageCenA"}, [ce("div", {className: "pageCenB"}, [ftrColCont])]));
+    ftrCont.append(ce("div", {className: "pageCenA"}, [ce("div", {className: "pageCenB"}, [
+        ftrColCont,
+        ce("div", {style: "display:flex;flex-wrap:wrap;justify-content:space-between;"}, [
+            ce("span", {className: "rSectGrayTxt", style: "margin:5px 20px;", innerText: "Copyright © All rights reserved"}),
+            ce("span", {className: "rSectGrayTxt", style: "margin:5px 20px;", innerText: "Developed by Isfar Tausif"}),
+        ])
+    ])]));
 }
 
 

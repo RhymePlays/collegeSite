@@ -6,8 +6,37 @@ initPage({
     extraCSS: `
     @media only screen and (max-width: ${mobileUiThreshold}px){
 
-    }`
+    }`,
+    onCommonLoad: function(){
+        artclSetBoards();
+    }
 });
+
+
+// Sign In
+function askToSignIn(){
+    document.getElementById("adminControls").style.display = "none";
+    createOP("Sign In", ce("div", {style: "display:flex;flex-direction:column;"}, [
+        ce("form", {style: "display:flex;flex-direction:column;"}, [
+            ce("input", {id: "signInEmailIO", placeholder: "Email", type: "email"}),
+            ce("input", {id: "signInPassIO", placeholder: "Password", type: "password", style: "margin-top: 10px"})
+        ]),
+        ce("div", {className: "rBtn", style: "margin-top: 10px", innerText: "Sign In", onclick: function(){
+            let signInEmail=document.getElementById("signInEmailIO").value;
+            let signInPass=document.getElementById("signInPassIO").value;
+            if(signInEmail.length > 0 && signInPass.length > 0){
+                document.getElementById("overPage").style.display = "none";
+    
+                firebase.auth().signInWithEmailAndPassword(signInEmail, signInPass).then((arg)=>{
+                    document.getElementById("adminControls").style.display = "block";
+                }).catch((e)=>{
+                    createOP("Error!", ce("div", {}, ["Failed to Sign In!"]));
+                });
+            }
+        }})
+    ]));
+}askToSignIn()
+
 
 // Post Artcl
 let artclTtlIO = document.getElementById("artclTtlIO");
@@ -17,6 +46,27 @@ let artclImages = [];
 let artclBoardIO = document.getElementById("artclBoardIO");
 let artclImgCont = document.getElementById("artclImgCont");
 
+function artclSetBoards(){
+    // Sets Board Info for 3 Fields: Add Article, Delete Article, Delete Board
+    let boardIDsCopy = commonDBData.boardIDs;
+
+    let boardDelIDIO = document.getElementById("boardDelIDIO");
+    let artclDelBoardIO = document.getElementById("artclDelBoardIO");
+    let artclBoardIO = document.getElementById("artclBoardIO");
+
+    boardDelIDIO.innerHTML = "";artclDelBoardIO.innerHTML = "";artclBoardIO.innerHTML = "";
+
+    if (boardIDsCopy == undefined){boardIDsCopy = []}
+    if (boardIDsCopy.includes("About") == false){boardIDsCopy.unshift("About");}
+    if (boardIDsCopy.includes("Notice") == false){boardIDsCopy.unshift("Notice");}
+
+    for(index in boardIDsCopy){
+        let boardID = boardIDsCopy[index];
+        artclBoardIO.append(ce("option", {value: boardID}, [boardID]));
+        artclDelBoardIO.append(ce("option", {value: boardID}, [boardID]));
+        boardDelIDIO.append(ce("option", {value: boardID}, [boardID]));
+    }
+}
 function artclSetDate(){artclDateIO.value = new Date().toISOString().split(".")[0]}
 function artclImgContUpdate(){
     artclImgCont.innerHTML = "";
@@ -147,6 +197,56 @@ function artclDel(){
             }
         });
     }
+}
+
+
+// Add Board
+function boardAdd(){
+    let boardAddIDIO = document.getElementById("boardAddIDIO");
+
+    if (boardAddIDIO.value && boardAddIDIO.value!="siteData"){
+        db.collection(boardAddIDIO.value).add({}).then(()=>{
+            db.collection("siteData").doc("common").get().then((commonRef)=>{
+                let commonData = commonRef.data();
+                if(commonData != undefined){
+                    if ("boardIDs" in commonData){
+                        if (commonData.boardIDs.includes(boardAddIDIO.value) == false){commonData.boardIDs.push(boardAddIDIO.value)}
+                        db.collection("siteData").doc("common").set(commonData);
+                    }
+                    else{
+                        commonData["boardIDs"] = [boardAddIDIO.value];
+                        db.collection("siteData").doc("common").set(commonData);
+                    }
+                }else{
+                    db.collection("siteData").doc("common").set({boardIDs: [boardAddIDIO.value]});
+                }
+                commonDBData = commonData;artclSetBoards();
+            });
+            
+            createOP("Success", ce("div", {style: "display:flex;flex-direction:column;"}, [
+                ce("div", {style: "display:flex;align-items:center;margin-bottom:20px;"}, [matSym("check_circle", {style: "margin-right:5px"}), "Board Added Successfully!"]),
+                ce("div", {}, [`Board: ${boardAddIDIO.value}`])
+            ]));
+        });
+    }
+}
+function boardDel(){
+    let boardDelIDIO = document.getElementById("boardDelIDIO");
+
+    db.collection("siteData").doc("common").get().then((commonRef)=>{
+        let commonDBDataLatest = commonRef.data();
+        let hasChanged = false;
+        for (index in commonDBDataLatest.boardIDs){
+            if (commonDBDataLatest.boardIDs[index] == boardDelIDIO.value){
+                commonDBDataLatest.boardIDs.splice(index, 1);
+                hasChanged = true;
+            };
+        }
+        if (hasChanged){db.collection("siteData").doc("common").set(commonDBDataLatest);}
+        commonDBData = commonDBDataLatest;artclSetBoards();
+    });
+
+    window.open("https://console.firebase.google.com", target="_blank");
 }
 
 

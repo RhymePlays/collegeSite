@@ -12,6 +12,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.1.0/firebase-analytics-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.1.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.1.0/firebase-auth-compat.js"></script>
     
     <link rel="stylesheet" href="/common/common.css">
     <script defer src="/common/common.js"></script>
@@ -22,210 +23,243 @@
 <body>
     <div id="subNavCont"></div>
 
-    <div class="rSect" style="margin-bottom: 0;">
-        <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">newspaper</span>Post Article</span><span class="rBtn" id="artclPostBtn" onclick="javascript:artclPost()">Post</span></div>
-        <div class="rSectBody">
-            <div class="rSectFormItem">
-                <span class="rSectFormTtl">Title</span><input id="artclTtlIO" type="text">
-            </div>
-            <div class="rSectFormItem">
-                <span class="rSectFormTtl">Date</span><input id="artclDateIO" type="datetime-local"><div id="artclSetTimeBtn" class="rBtn material-symbols-outlined" onclick="javascript:artclSetDate()">schedule</div>
-            </div>
-            <div class="rSectFormItem">
-                <span class="rSectFormTtl">Body</span><textarea id="artclBodyIO"></textarea>
-            </div>
-            <div class="rSectFormItem">
-                <span class="rSectFormTtl">Images</span>
-                <div class="rSectFormImg">
-                    <div class="rBtn" onclick="javascript:addArtclImgLink()"><span class="material-symbols-outlined">add_link</span></div>
-                    <div class="rBtn" onclick="javascript:addArtclImgFile()"><span class="material-symbols-outlined">add_circle</span></div>
-                    <div id="artclImgCont"></div>
+    <div id="adminControls">
+        <div class="rSect" style="margin-bottom: 0;">
+            <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">newspaper</span>Post Article</span><span class="rBtn" id="artclPostBtn" onclick="javascript:artclPost()">Post</span></div>
+            <div class="rSectBody">
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">Title</span><input id="artclTtlIO" type="text">
+                </div>
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">Date</span><input id="artclDateIO" type="datetime-local"><div id="artclSetTimeBtn" class="rBtn material-symbols-outlined" onclick="javascript:artclSetDate()">schedule</div>
+                </div>
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">Body</span><textarea id="artclBodyIO" placeholder="Supports Markdown"></textarea>
+                </div>
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">Images</span>
+                    <div class="rSectFormImg">
+                        <div class="rBtn" onclick="javascript:addArtclImgLink()"><span class="material-symbols-outlined">add_link</span></div>
+                        <div class="rBtn" onclick="javascript:addArtclImgFile()"><span class="material-symbols-outlined">add_circle</span></div>
+                        <div id="artclImgCont" class="rSectFormImgCont"></div>
+                    </div>
+                </div>
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">Board</span>
+                    <select id="artclBoardIO">
+                        <option value="Notice">Notice</option>
+                        <option value="About">About</option>
+                    </select>
                 </div>
             </div>
-            <div class="rSectFormItem">
-                <span class="rSectFormTtl">Board</span>
-                <select id="artclBoardIO">
-                    <option value="Notice">Notice</option>
-                    <option value="About">About</option>
-                </select>
-            </div>
         </div>
-    </div>
-    <div class="rSect">
-        <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">delete</span>Delete Article</span><span class="rBtn" onclick="javascript:artclDel()">Delete</span></div>
-        <div class="rSectBody">
-            <div class="rSectFormItem">
-                <span class="rSectFormTtl">ID</span><input id="artclDelIDIO" type="text">
-            </div>
-            <div class="rSectFormItem">
-                <span class="rSectFormTtl">Board</span>
-                <select id="artclDelBoardIO">
-                    <option value="Notice">Notice</option>
-                    <option value="About">About</option>
-                </select>
-            </div>
-        </div>
-    </div>
-
-    <div class="rSect" style="margin-bottom: 0;">
-        <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">photo</span>Add Photo</span><span class="rBtn" onclick="javascript:photoAdd()">Add</span></div>
-        <div class="rSectBody">
-            <div class="rSectFormItem">
-                <span class="rSectFormTtl">Caption</span><input id="photoAddCaptIO" type="text">
-            </div>
-            <div class="rSectFormItem">
-                <span class="rSectFormTtl">Images</span>
-                <div class="rSectFormImg">
-                    <div class="rBtn" onclick="javascript:addPhotoImgLink()"><span class="material-symbols-outlined">add_link</span></div>
-                    <div class="rBtn" onclick="javascript:addPhotoImgFile()"><span class="material-symbols-outlined">add_circle</span></div>
-                    <div id="photoAddImgCont"></div>
+        <div class="rSect">
+            <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">delete</span>Delete Article</span><span class="rBtn" onclick="javascript:artclDel()">Delete</span></div>
+            <div class="rSectBody">
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">ID</span><input id="artclDelIDIO" type="text">
+                </div>
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">Board</span>
+                    <select id="artclDelBoardIO">
+                        <option value="Notice">Notice</option>
+                        <option value="About">About</option>
+                    </select>
                 </div>
             </div>
-            <div class="rSectFormItem">
-                <span class="rSectFormTtl">Order</span>
-                <select id="phtoOrderIO">
-                    <option value="front">Add at the very Front</option>
-                    <option value="back">Add at the very Back</option>
-                </select>
-            </div>
-
         </div>
-    </div>
-    <div class="rSect">
-        <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">hide_image</span>Remove Photo</span><span class="rBtn" onclick="javascript:photoDel()">Remove</span></div>
-        <div class="rSectBody">
-            <div class="rSectFormItem">
-                <span class="rSectFormTtl">ID</span><input id="delPhotoIDIO" type="text">
-            </div>
-        </div>
-    </div>
-
-    <div class="rSect" style="margin-bottom: 0;">
-        <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">push_pin</span>Pin Photo</span><span class="rBtn" onclick="javascript:pinnedPhtoAdd()">Pin</span></div>
-        <div class="rSectBody">
-            <div class="rSectFormItem">
-                <span class="rSectFormTtl">ID</span><input id="pinnedPhtoAddIDIO" type="text">
-            </div>
-            <div class="rSectFormItem">
-                <span class="rSectFormTtl">Order</span>
-                <select id="pinnedPhtoOrderIO">
-                    <option value="front">Add at the very Front</option>
-                    <option value="back">Add at the very Back</option>
-                </select>
-            </div>
-        </div>
-    </div>
-    <div class="rSect">
-        <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">delete</span>Unpin Photo</span><span class="rBtn" onclick="javascript:pinnedPhtoDel()">Unpin</span></div>
-        <div class="rSectBody">
-            <div class="rSectFormItem">
-                <span class="rSectFormTtl">ID</span><input id="pinnedPhtoDelIDIO" type="text">
-            </div>
-        </div>
-    </div>
-
-    <div class="rSect" style="margin-bottom: 0;">
-        <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">person_add</span>Add Person</span><span class="rBtn" onclick="javascript:prsnAdd()">Add</span></div>
-        <div class="rSectBody">
-            <div class="rSectFormItem">
-                <span class="rSectFormTtl">Name</span><input id="prsnAddNameIO" type="text">
-            </div>
-            <div class="rSectFormItem">
-                <span class="rSectFormTtl">Post</span><input id="prsnAddPostIO" type="text">
-            </div>
-            <div class="rSectFormItem">
-                <span class="rSectFormTtl">Body</span><textarea id="prsnAddBodyIO"></textarea>
-            </div>
-            <div class="rSectFormItem">
-                <span class="rSectFormTtl">Image</span>
-                <div class="rSectFormImg">
-                    <div class="rBtn" onclick="javascript:addPrsnImgLink()"><span class="material-symbols-outlined">add_link</span></div>
-                    <div class="rBtn" onclick="javascript:addPrsnImgFile()"><span class="material-symbols-outlined">add_circle</span></div>
-                    <div id="prsnAddImgCont"></div>
+        
+        <div class="rSect" style="margin-bottom: 0;">
+            <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">dashboard</span>Add Board</span><span class="rBtn" onclick="javascript:boardAdd()">Add</span></div>
+            <div class="rSectBody">
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">Board</span><input id="boardAddIDIO" type="text">
                 </div>
             </div>
-            <div class="rSectFormItem">
-                <span class="rSectFormTtl">Order</span>
-                <select id="prsnAddOrderIO">
-                    <option value="front">Add at the very Front</option>
-                    <option value="back">Add at the very Back</option>
-                </select>
+        </div>
+        <div class="rSect">
+            <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">delete</span>Delete Board</span><span class="rBtn" onclick="javascript:boardDel()">Delete</span></div>
+            <div class="rSectBody">
+                <div class="rSectFormItem">
+                    <span>
+                        <b>Instruction: </b>Boards are saved as <b>Collections</b> in the Firestore DB. Firebase doesn't allow the deletion of entire Collections at once through their Web API. To delete a whole Collection (Board) and all the Documents (Articles) inside said Collection, you must log into the Firebase Console, and do through their Web UI.<br>
+                        <br>
+                        <b>Proceed with caution!</b><br>
+                        <br>
+                        <b>Don't delete</b> the collections named "siteData" and "Notice" <b>(location: "/siteData" and "/Notice")!</b><br>
+                        The Collections for Boards exist in the root directory <b>(Example location: "/About", "/BoardName")</b><br>
+                    </span>
+                </div>
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">Board</span>
+                    <select id="boardDelIDIO">
+                        <option value="Notice">Notice</option>
+                        <option value="About">About</option>
+                    </select>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="rSect">
-        <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">person_remove</span>Remove Person</span><span class="rBtn" onclick="javascript:prsnDel()">Remove</span></div>
-        <div class="rSectBody">
-            <div class="rSectFormItem">
-                <span class="rSectFormTtl">ID</span><input id="prsnDelIDIO" type="text">
-            </div>
-        </div>
-    </div>
-
-    <div class="rSect" style="margin-bottom: 0;">
-        <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">push_pin</span>Pin Person</span><span class="rBtn" onclick="javascript:pinnedPrsnAdd()">Pin</span></div>
-        <div class="rSectBody">
-            <div class="rSectFormItem">
-                <span class="rSectFormTtl">ID</span><input id="pinnedPrsnAddIDIO" type="text">
-            </div>
-            <div class="rSectFormItem">
-                <span class="rSectFormTtl">Order</span>
-                <select id="pinnedPrsnOrderIO">
-                    <option value="front">Add at the very Front</option>
-                    <option value="back">Add at the very Back</option>
-                </select>
-            </div>
-        </div>
-    </div>
-    <div class="rSect">
-        <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">delete</span>Unpin Person</span><span class="rBtn" onclick="javascript:pinnedPrsnDel()">Unpin</span></div>
-        <div class="rSectBody">
-            <div class="rSectFormItem">
-                <span class="rSectFormTtl">ID</span><input id="pinnedPrsnDelIDIO" type="text">
-            </div>
-        </div>
-    </div>
-
-    <div class="rSect">
-        <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">notes</span>Short Description</span><span class="rBtn" onclick="javascript:shrtDescUpdt()">Update</span></div>
-        <div class="rSectBody">
-            <div class="rSectFormItem">
-                <span class="rSectFormTtl">Body</span><textarea id="shrtDescIO"></textarea>
-            </div>
-        </div>
-    </div>
     
-    <div class="rSect" style="margin-bottom: 0;">
-        <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">title</span>Site Name</span><span class="rBtn" onclick="javascript:siteNameUpdt()">Update</span></div>
-        <div class="rSectBody">
-            <div class="rSectFormItem">
-                <span class="rSectFormTtl">Name</span><input id="siteNameIO" type="text">
+        <div class="rSect" style="margin-bottom: 0;">
+            <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">photo</span>Add Photo</span><span class="rBtn" onclick="javascript:photoAdd()">Add</span></div>
+            <div class="rSectBody">
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">Caption</span><input id="photoAddCaptIO" type="text">
+                </div>
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">Images</span>
+                    <div class="rSectFormImg">
+                        <div class="rBtn" onclick="javascript:addPhotoImgLink()"><span class="material-symbols-outlined">add_link</span></div>
+                        <div class="rBtn" onclick="javascript:addPhotoImgFile()"><span class="material-symbols-outlined">add_circle</span></div>
+                        <div id="photoAddImgCont"></div>
+                    </div>
+                </div>
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">Order</span>
+                    <select id="phtoOrderIO">
+                        <option value="front">Add at the very Front</option>
+                        <option value="back">Add at the very Back</option>
+                    </select>
+                </div>
+    
             </div>
         </div>
-    </div>
-    <div class="rSect">
-        <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">colors</span>Colors</span><span class="rBtn" onclick="javascript:colorUpdt()">Update</span></div>
-        <div class="rSectBody">
-            <div class="rSectFormItem">
-                <span class="rSectFormTtl">10</span><input id="c10IO" type="text">
+        <div class="rSect">
+            <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">hide_image</span>Remove Photo</span><span class="rBtn" onclick="javascript:photoDel()">Remove</span></div>
+            <div class="rSectBody">
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">ID</span><input id="delPhotoIDIO" type="text">
+                </div>
             </div>
-            <div class="rSectFormItem">
-                <span class="rSectFormTtl">10 Tint</span><input id="c10TintIO" type="text">
+        </div>
+    
+        <div class="rSect" style="margin-bottom: 0;">
+            <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">push_pin</span>Pin Photo</span><span class="rBtn" onclick="javascript:pinnedPhtoAdd()">Pin</span></div>
+            <div class="rSectBody">
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">ID</span><input id="pinnedPhtoAddIDIO" type="text">
+                </div>
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">Order</span>
+                    <select id="pinnedPhtoOrderIO">
+                        <option value="front">Add at the very Front</option>
+                        <option value="back">Add at the very Back</option>
+                    </select>
+                </div>
             </div>
-            <div class="rSectFormItem">
-                <span class="rSectFormTtl">30</span><input id="c30IO" type="text">
+        </div>
+        <div class="rSect">
+            <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">delete</span>Unpin Photo</span><span class="rBtn" onclick="javascript:pinnedPhtoDel()">Unpin</span></div>
+            <div class="rSectBody">
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">ID</span><input id="pinnedPhtoDelIDIO" type="text">
+                </div>
             </div>
-            <div class="rSectFormItem">
-                <span class="rSectFormTtl">30 Shade</span><input id="c30ShadeIO" type="text">
+        </div>
+    
+        <div class="rSect" style="margin-bottom: 0;">
+            <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">person_add</span>Add Person</span><span class="rBtn" onclick="javascript:prsnAdd()">Add</span></div>
+            <div class="rSectBody">
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">Name</span><input id="prsnAddNameIO" type="text">
+                </div>
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">Post</span><input id="prsnAddPostIO" type="text">
+                </div>
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">Body</span><textarea id="prsnAddBodyIO" placeholder="Supports Markdown"></textarea>
+                </div>
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">Image</span>
+                    <div class="rSectFormImg">
+                        <div class="rBtn" onclick="javascript:addPrsnImgLink()"><span class="material-symbols-outlined">add_link</span></div>
+                        <div class="rBtn" onclick="javascript:addPrsnImgFile()"><span class="material-symbols-outlined">add_circle</span></div>
+                        <div id="prsnAddImgCont"></div>
+                    </div>
+                </div>
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">Order</span>
+                    <select id="prsnAddOrderIO">
+                        <option value="front">Add at the very Front</option>
+                        <option value="back">Add at the very Back</option>
+                    </select>
+                </div>
             </div>
-            <div class="rSectFormItem">
-                <span class="rSectFormTtl">60</span><input id="c60IO" type="text">
+        </div>
+        <div class="rSect">
+            <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">person_remove</span>Remove Person</span><span class="rBtn" onclick="javascript:prsnDel()">Remove</span></div>
+            <div class="rSectBody">
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">ID</span><input id="prsnDelIDIO" type="text">
+                </div>
             </div>
-            <div class="rSectFormItem">
-                <span class="rSectFormTtl">60Tint</span><input id="c60TintIO" type="text">
+        </div>
+    
+        <div class="rSect" style="margin-bottom: 0;">
+            <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">push_pin</span>Pin Person</span><span class="rBtn" onclick="javascript:pinnedPrsnAdd()">Pin</span></div>
+            <div class="rSectBody">
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">ID</span><input id="pinnedPrsnAddIDIO" type="text">
+                </div>
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">Order</span>
+                    <select id="pinnedPrsnOrderIO">
+                        <option value="front">Add at the very Front</option>
+                        <option value="back">Add at the very Back</option>
+                    </select>
+                </div>
             </div>
-            <div class="rSectFormItem">
-                <span class="rSectFormTtl">Green</span><input id="cGreenIO" type="text">
+        </div>
+        <div class="rSect">
+            <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">delete</span>Unpin Person</span><span class="rBtn" onclick="javascript:pinnedPrsnDel()">Unpin</span></div>
+            <div class="rSectBody">
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">ID</span><input id="pinnedPrsnDelIDIO" type="text">
+                </div>
+            </div>
+        </div>
+    
+        <div class="rSect">
+            <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">notes</span>Short Description</span><span class="rBtn" onclick="javascript:shrtDescUpdt()">Update</span></div>
+            <div class="rSectBody">
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">Body</span><textarea id="shrtDescIO" placeholder="Supports Markdown"></textarea>
+                </div>
+            </div>
+        </div>
+        
+        <div class="rSect" style="margin-bottom: 0;">
+            <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">title</span>Site Name</span><span class="rBtn" onclick="javascript:siteNameUpdt()">Update</span></div>
+            <div class="rSectBody">
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">Name</span><input id="siteNameIO" type="text">
+                </div>
+            </div>
+        </div>
+        <div class="rSect">
+            <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">colors</span>Colors</span><span class="rBtn" onclick="javascript:colorUpdt()">Update</span></div>
+            <div class="rSectBody">
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">10</span><input id="c10IO" type="text" placeholder="#ff4466">
+                </div>
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">10 Tint</span><input id="c10TintIO" type="text" placeholder="#ffaabb">
+                </div>
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">30</span><input id="c30IO" type="text" placeholder="#ffffff">
+                </div>
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">30 Shade</span><input id="c30ShadeIO" type="text" placeholder="#b5b5b5">
+                </div>
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">60</span><input id="c60IO" type="text" placeholder="#151515">
+                </div>
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">60Tint</span><input id="c60TintIO" type="text" placeholder="#202020">
+                </div>
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">Green</span><input id="cGreenIO" type="text" placeholder="#10f060">
+                </div>
             </div>
         </div>
     </div>
