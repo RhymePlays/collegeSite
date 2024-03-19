@@ -13,76 +13,20 @@ var commonDBData = undefined;
 var mobileUiThreshold = 700;
 var siteName = "bakedSiteName";
 var navData = [
-    {text: "Home", link: "/"},
-    {text: "Option Ni"},
-    {
-        text: "Option San",
-        link: "#a",
-        subOpts: [
-            {
-                text: "Sub-Option C",
-                link: "#b"
-            },
-            {
-                text: "Sub-Option D",
-                link: "#c"
-            },
-            {
-                text: "Sub-Option E",
-                link: "#d"
-            },
-        ]
-    },
     {logo: true, src: "/logo.png"},
-    {text: "Option 4", subOpts: [{}]},
-    {text: "Option 5", subOpts: [{}]},
-    {text: "Option 6", subOpts: [{}]},
 ];
 var ftrData = [
     {
-        text: "Section Title 1",
-        matSym: "photo",
-        subOpts: [
-            {
-                text: "Ftr Link 1",
-                matSym: "link",
-                link: "#FtrLink1"
-            },
-            {
-                text: "Ftr Link 2",
-                iconUrl: "/logo.png",
-                link: "#FtrLink2"
-            },
-            {
-                text: "Ftr Link 3",
-                link: "#FtrLink3"
-            },
-        ]
-    },
-    {
-        text: "Section Title 2",
+        text: "Site Related",
         iconUrl: "/logo.png",
-        subOpts: []
-    },
-    {
-        text: "Section Title 3",
-        subOpts: [
-            {
-                text: "Ftr Link 4",
-                matSym: "open_in_new",
-                link: "#FtrLink4"
-            },
-        ]
-    },
-    {
         subOpts: [
             {
                 text: "Admin Page",
-                iconUrl: "/logo.png",
+                matSym: "settings",
                 link: "/admin"
-            },
+            }
         ]
-    }
+    },
 ];
 
 

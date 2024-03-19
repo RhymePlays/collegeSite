@@ -18,3 +18,54 @@
     transition: ease-in 100ms;
 }.rSectFormImg img:hover{opacity: 0.8;box-shadow: var(--color10) 0px 0px 0px 2px; transition: ease-out 200ms;}
 .rSectFormImg .rBtn{padding: 0;height: 70px;min-height: 70px;width: 70px;min-width: 70px;margin-right: 5px;display: flex;justify-content: center;align-items: center;border:0;}
+
+
+
+#addNavFtrItem{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+
+.rSectFtrItemLogoIcon{
+    display: flex;
+    object-fit: cover;
+    color: var(--color10);
+    margin-left: 10px;
+    height: 24px;
+    width: 24px;   
+}
+.rSectNavFtrItem{
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+    overflow: hidden;
+}.rSectNavFtrItem .rBtn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 5px;
+}
+.rSectNavFtrItemData{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 10px;
+}
+.rSectNavFtrItemText{color: var(--color10);padding:0px 10px;text-overflow: ellipsis;max-width: 300px;white-space: nowrap;overflow: hidden;}
+.rSectNavFtrItemLink{color: var(--color30Shade);padding-right: 10px;text-overflow: ellipsis;max-width: 400px;white-space: nowrap;overflow: hidden;}
+
+.rSectNavFtrSubItemCont{
+    margin-left: 54px;
+    display: flex;
+    flex-direction: column;
+}
+.rSectNavFtrSubItem{
+    margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.rSectNavFtrSubItemText{color: var(--color10Tint);padding:0px 10px;text-overflow: ellipsis;max-width: 300px;white-space: nowrap;overflow: hidden;}
+.rSectNavFtrSubItemLink{color: var(--color30Shade);padding-right: 10px;text-overflow: ellipsis;max-width: 400px;white-space: nowrap;overflow: hidden;}

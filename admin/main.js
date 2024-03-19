@@ -9,6 +9,8 @@ initPage({
     }`,
     onCommonLoad: function(){
         artclSetBoards();
+        tempNavData = commonDBData.navData || navData;navUpdater();
+        tempFtrData = commonDBData.ftrData || ftrData;ftrUpdater();
     }
 });
 
@@ -35,7 +37,7 @@ function askToSignIn(){
             }
         }})
     ]));
-}askToSignIn()
+}askToSignIn();
 
 
 // Post Artcl
@@ -651,6 +653,432 @@ function shrtDescUpdt(){
         });
     }
 }
+
+
+// Nav
+let tempNavData;
+let rSectNavItemCont = document.getElementById("rSectNavItemCont");
+function navUpdater(){
+    rSectNavItemCont.innerHTML = "";
+    
+    let hasLogo = false;
+    for (index in tempNavData){if (tempNavData[index].logo){hasLogo = true;}}
+    if (hasLogo==false){tempNavData.unshift({logo: true, src: "/logo.png"});}
+
+    for (index1 in tempNavData){
+        let rSectNavFtrItemData;
+        if (tempNavData[index1].logo){ //Logo
+            rSectNavFtrItemData = ce("div", {className: "rSectNavFtrItemData"}, [
+                ce("span", {className: "rBtn"}, [matSym("arrow_upward", {
+                    onclick: function(){
+                        tempNavData.splice(this.parentNode.parentNode.parentNode.index1-1, 0, tempNavData.splice(this.parentNode.parentNode.parentNode.index1, 1)[0]);navUpdater();
+                    }
+                })]),
+                ce("span", {className: "rBtn"}, [matSym("arrow_downward", {
+                    onclick: function(){
+                        tempNavData.splice(this.parentNode.parentNode.parentNode.index1+1, 0, tempNavData.splice(this.parentNode.parentNode.parentNode.index1, 1)[0]);navUpdater();
+                    }
+                })]),
+                ce("span", {className: "rBtn"}, [matSym("edit", {
+                    onclick: function(){
+                        let editingIndex1 = this.parentNode.parentNode.parentNode.index1;
+                        createOP("Edit", ce("div", {style: "display:flex;flex-direction:column;"}, [
+                            ce("input", {id: "navItemLinkIO", placeholder: "Image URL", value: tempNavData[editingIndex1].src}),
+                            ce("div", {className: "rBtn", style: "margin-top: 10px;border-color: var(--color10);color: var(--color10);", innerText: "Save", onclick: function(){
+                                let navItemLinkIO=document.getElementById("navItemLinkIO").value;
+                                if(navItemLinkIO.length > 0){
+                                    document.getElementById("overPage").style.display = "none";
+                                    tempNavData[editingIndex1].src = navItemLinkIO;
+                                    navUpdater();
+                                }
+                            }}),
+                        ]));
+                    }
+                })]),
+                ce("span", {className: "rSectNavFtrItemText"}, ["Logo"]),
+                ce("span", {className: "rSectNavFtrItemLink"}, [tempNavData[index1].src])
+            ]);
+        }else{ //Items
+            rSectNavFtrItemData = ce("div", {className: "rSectNavFtrItemData"}, [
+                ce("span", {className: "rBtn"}, [matSym("arrow_upward", {
+                    onclick: function(){
+                        tempNavData.splice(this.parentNode.parentNode.parentNode.index1-1, 0, tempNavData.splice(this.parentNode.parentNode.parentNode.index1, 1)[0]);
+                        navUpdater();
+                    }
+                })]),
+                ce("span", {className: "rBtn"}, [matSym("arrow_downward", {
+                    onclick: function(){
+                        tempNavData.splice(this.parentNode.parentNode.parentNode.index1+1, 0, tempNavData.splice(this.parentNode.parentNode.parentNode.index1, 1)[0]);
+                        navUpdater();
+                    }
+                })]),
+                ce("span", {className: "rBtn"}, [matSym("edit", {
+                    onclick: function(){
+                        let editingIndex1 = this.parentNode.parentNode.parentNode.index1;
+                        createOP("Edit", ce("div", {style: "display:flex;flex-direction:column;"}, [
+                            ce("input", {id: "navItemTextIO", placeholder: "Text", value: tempNavData[editingIndex1].text}),
+                            ce("input", {id: "navItemLinkIO", placeholder: "Link", value: tempNavData[editingIndex1].link, style: "margin-top: 10px"}),
+                            ce("div", {className: "rBtn", style: "margin-top: 10px;", innerText: "Delete", onclick: function(){
+                                document.getElementById("overPage").style.display = "none";
+                                tempNavData.splice(editingIndex1, 1);
+                                navUpdater();
+                            }}),
+                            ce("div", {className: "rBtn", style: "margin-top: 10px;border-color: var(--color10);color: var(--color10);", innerText: "Save", onclick: function(){
+                                let navItemTextIO=document.getElementById("navItemTextIO").value;
+                                let navItemLinkIO=document.getElementById("navItemLinkIO").value;
+                                if(navItemTextIO.length > 0 && navItemLinkIO.length > 0){
+                                    document.getElementById("overPage").style.display = "none";
+                                    tempNavData[editingIndex1].text = navItemTextIO;
+                                    tempNavData[editingIndex1].link = navItemLinkIO;
+                                    navUpdater();
+                                }
+                            }}),
+                        ]));
+                    }
+                })]),
+                ce("span", {className: "rBtn"}, [matSym("add", {
+                    onclick: function(){
+                        let editingIndex1 = this.parentNode.parentNode.parentNode.index1;
+                        createOP("Add Nav SubItem", ce("div", {style: "display:flex;flex-direction:column;"}, [
+                            ce("input", {id: "navItemTextIO", placeholder: "Text"}),
+                            ce("input", {id: "navItemLinkIO", placeholder: "Link", style: "margin-top: 10px"}),
+                            ce("div", {className: "rBtn", style: "margin-top: 10px;", innerText: "Add", onclick: function(){
+                                let navItemTextIO=document.getElementById("navItemTextIO").value;
+                                let navItemLinkIO=document.getElementById("navItemLinkIO").value;
+                                if(navItemTextIO.length > 0 && navItemLinkIO.length > 0){
+                                    document.getElementById("overPage").style.display = "none";
+                                    if (typeof(tempNavData[editingIndex1].subOpts)!="object"){tempNavData[editingIndex1].subOpts = [];}
+                                    tempNavData[editingIndex1].subOpts.push({text: navItemTextIO, link: navItemLinkIO});
+                                    navUpdater();
+                                }
+                            }}),
+                        ]));
+                    }
+                })]),
+                ce("span", {className: "rSectNavFtrItemText"}, [tempNavData[index1].text]),
+                ce("span", {className: "rSectNavFtrItemLink"}, [tempNavData[index1].link])
+            ]);
+        }
+        let rSectNavFtrSubItemCont = ce("div", {className: "rSectNavFtrSubItemCont"})
+        if ("subOpts" in tempNavData[index1]){ //Sub Items
+            for (index2 in tempNavData[index1]["subOpts"]){
+                rSectNavFtrSubItemCont.append(ce("div", {className: "rSectNavFtrSubItem", index2: index2}, [
+                    ce("span", {className: "rBtn"}, [matSym("arrow_upward", {
+                        onclick: function(){
+                            tempNavData[this.parentNode.parentNode.parentNode.parentNode.index1].subOpts
+                                .splice(this.parentNode.parentNode.index2-1, 0, tempNavData[this.parentNode.parentNode.parentNode.parentNode.index1].subOpts.splice(this.parentNode.parentNode.index2, 1)[0]);
+                            navUpdater();
+                        }
+                    })]),
+                    ce("span", {className: "rBtn"}, [matSym("arrow_downward", {
+                        onclick: function(){
+                            tempNavData[this.parentNode.parentNode.parentNode.parentNode.index1].subOpts
+                                .splice(this.parentNode.parentNode.index2-1, 0, tempNavData[this.parentNode.parentNode.parentNode.parentNode.index1].subOpts.splice(this.parentNode.parentNode.index2, 1)[0]);
+                            navUpdater();
+                        }
+                    })]),
+                    ce("span", {className: "rBtn"}, [matSym("edit", {
+                        onclick: function(){
+                            let editingIndex1 = this.parentNode.parentNode.parentNode.parentNode.index1;
+                            let editingIndex2 = this.parentNode.parentNode.index2;
+                            createOP("Edit", ce("div", {style: "display:flex;flex-direction:column;"}, [
+                                ce("input", {id: "navItemTextIO", placeholder: "Text", value: tempNavData[editingIndex1].subOpts[editingIndex2].text}),
+                                ce("input", {id: "navItemLinkIO", placeholder: "Link", value: tempNavData[editingIndex1].subOpts[editingIndex2].link, style: "margin-top: 10px"}),
+                                ce("div", {className: "rBtn", style: "margin-top: 10px;", innerText: "Delete", onclick: function(){
+                                    document.getElementById("overPage").style.display = "none";
+                                    tempNavData[editingIndex1].subOpts.splice(editingIndex2, 1);
+                                    if (tempNavData[editingIndex1].subOpts.length == 0){delete tempNavData[editingIndex1].subOpts;}
+                                    navUpdater();
+                                }}),
+                                ce("div", {className: "rBtn", style: "margin-top: 10px;border-color: var(--color10);color: var(--color10);", innerText: "Save", onclick: function(){
+                                    let navItemTextIO=document.getElementById("navItemTextIO").value;
+                                    let navItemLinkIO=document.getElementById("navItemLinkIO").value;
+                                    if(navItemTextIO.length > 0 && navItemLinkIO.length > 0){
+                                        document.getElementById("overPage").style.display = "none";
+                                        tempNavData[editingIndex1].subOpts[editingIndex2].text = navItemTextIO;
+                                        tempNavData[editingIndex1].subOpts[editingIndex2].link = navItemLinkIO;
+                                        navUpdater();
+                                    }
+                                }}),
+                            ]));
+                        }
+                    })]),
+                    ce("span", {className: "rSectNavFtrSubItemText"}, [tempNavData[index1]["subOpts"][index2].text]),
+                    ce("span", {className: "rSectNavFtrSubItemLink"}, [tempNavData[index1]["subOpts"][index2].link])
+                ]));
+            }
+        }
+        
+        rSectNavItemCont.append(ce("div", {className: "rSectNavFtrItem", index1: index1}, [
+            rSectNavFtrItemData,
+            rSectNavFtrSubItemCont
+        ]))
+    }
+}
+function addNavItem(){
+    createOP("Add Nav Item", ce("div", {style: "display:flex;flex-direction:column;"}, [
+        ce("input", {id: "navItemTextIO", placeholder: "Text"}),
+        ce("input", {id: "navItemLinkIO", placeholder: "Link", style: "margin-top: 10px"}),
+        ce("div", {className: "rBtn", style: "margin-top: 10px;", innerText: "Add", onclick: function(){
+            let navItemTextIO=document.getElementById("navItemTextIO").value;
+            let navItemLinkIO=document.getElementById("navItemLinkIO").value;
+            if(navItemTextIO.length > 0 && navItemLinkIO.length > 0){
+                document.getElementById("overPage").style.display = "none";
+                tempNavData.push({text: navItemTextIO, link: navItemLinkIO});
+                navUpdater();
+            }
+        }}),
+    ]));
+}
+function navUpdt(){
+    if(tempNavData){
+        db.collection("siteData").doc("common").get().then((commonRef)=>{
+            let commonData = commonRef.data();
+            if(commonData != undefined){
+                commonData["navData"] = tempNavData;
+                db.collection("siteData").doc("common").set(commonData);
+            }else{
+                db.collection("siteData").doc("common").set({navData: tempNavData});
+            }
+            createOP("Success", ce("div", {style: "display:flex;flex-direction:column;align-items:center;justify-content:center;"}, [
+                matSym("check_circle", {style: "margin-bottom:5px"}), ce("div", {}, ["Nav Updated!", ce("br"), "Reload the Page!"]),
+            ]));
+        });
+    }
+}
+
+
+// Ftr
+let tempFtrData;
+let rSectFtrItemCont = document.getElementById("rSectFtrItemCont");
+
+function ftrUpdater(){
+    rSectFtrItemCont.innerHTML = "";
+
+    for (index1 in tempFtrData){
+
+        let rSectNavFtrSubItemCont = ce("div", {className: "rSectNavFtrSubItemCont"})
+        if ("subOpts" in tempFtrData[index1]){ //Sub Items
+            for (index2 in tempFtrData[index1]["subOpts"]){
+
+                let rSectFtrSubItemLogoIconChild="";
+                if(tempFtrData[index1]["subOpts"][index2].matSym){rSectFtrSubItemLogoIconChild = matSym(tempFtrData[index1]["subOpts"][index2].matSym || "link_off")}
+                else if(tempFtrData[index1]["subOpts"][index2].iconUrl){rSectFtrSubItemLogoIconChild = ce("img", {src: tempFtrData[index1]["subOpts"][index2].iconUrl || ""});}
+
+                rSectNavFtrSubItemCont.append(ce("div", {className: "rSectNavFtrSubItem", index2: index2}, [
+                    ce("span", {className: "rBtn"}, [matSym("arrow_upward", {
+                        onclick: function(){
+                            tempFtrData[this.parentNode.parentNode.parentNode.parentNode.index1].subOpts
+                                .splice(this.parentNode.parentNode.index2-1, 0, tempFtrData[this.parentNode.parentNode.parentNode.parentNode.index1].subOpts.splice(this.parentNode.parentNode.index2, 1)[0]);
+                            ftrUpdater();
+                        }
+                    })]),
+                    ce("span", {className: "rBtn"}, [matSym("arrow_downward", {
+                        onclick: function(){
+                            tempFtrData[this.parentNode.parentNode.parentNode.parentNode.index1].subOpts
+                                .splice(this.parentNode.parentNode.index2-1, 0, tempFtrData[this.parentNode.parentNode.parentNode.parentNode.index1].subOpts.splice(this.parentNode.parentNode.index2, 1)[0]);
+                            ftrUpdater();
+                        }
+                    })]),
+                    ce("span", {className: "rBtn"}, [matSym("edit", {
+                        onclick: function(){
+                            let editingIndex1 = this.parentNode.parentNode.parentNode.parentNode.index1;
+                            let editingIndex2 = this.parentNode.parentNode.index2;
+                            createOP("Edit", ce("div", {style: "display:flex;flex-direction:column;"}, [
+                                ce("input", {id: "ftrItemMatSymIO", placeholder: "MatSym (More priority)", value: tempFtrData[editingIndex1].subOpts[editingIndex2].matSym || ""}),
+                                ce("input", {id: "ftrItemIconLinkIO", placeholder: "Icon (Less priority)", value: tempFtrData[editingIndex1].subOpts[editingIndex2].iconUrl || "", style: "margin-top: 10px"}),
+                                ce("input", {id: "ftrItemTextIO", placeholder: "Text", value: tempFtrData[editingIndex1].subOpts[editingIndex2].text || "", style: "margin-top: 10px"}),
+                                ce("input", {id: "ftrItemLinkIO", placeholder: "Link", value: tempFtrData[editingIndex1].subOpts[editingIndex2].link || "", style: "margin-top: 10px"}),
+                                ce("div", {className: "rBtn", style: "margin-top: 10px;", innerText: "Delete", onclick: function(){
+                                    document.getElementById("overPage").style.display = "none";
+                                    tempFtrData[editingIndex1].subOpts.splice(editingIndex2, 1);
+                                    if (tempFtrData[editingIndex1].subOpts.length == 0){delete tempFtrData[editingIndex1].subOpts;}
+                                    ftrUpdater();
+                                }}),
+                                ce("div", {className: "rBtn", style: "margin-top: 10px;border-color: var(--color10);color: var(--color10);", innerText: "Save", onclick: function(){
+                                    let ftrItemMatSymIO=document.getElementById("ftrItemMatSymIO");
+                                    let ftrItemIconLinkIO=document.getElementById("ftrItemIconLinkIO");
+                                    let ftrItemTextIO=document.getElementById("ftrItemTextIO");
+                                    let ftrItemLinkIO=document.getElementById("ftrItemLinkIO");
+                                    if(ftrItemTextIO.value.length > 0 && ftrItemLinkIO.value.length > 0){
+                                        document.getElementById("overPage").style.display = "none";
+                                        tempFtrData[editingIndex1].subOpts[editingIndex2].text = ftrItemTextIO.value;
+                                        tempFtrData[editingIndex1].subOpts[editingIndex2].link = ftrItemLinkIO.value;
+                                        if(ftrItemMatSymIO.value!=""){
+                                            delete tempFtrData[editingIndex1].subOpts[editingIndex2].iconUrl;
+                                            tempFtrData[editingIndex1].subOpts[editingIndex2].matSym = ftrItemMatSymIO.value;
+                                        }else if(ftrItemIconLinkIO.value!=""){
+                                            delete tempFtrData[editingIndex1].subOpts[editingIndex2].matSym;
+                                            tempFtrData[editingIndex1].subOpts[editingIndex2].iconUrl = ftrItemIconLinkIO.value;
+                                        }else{
+                                            delete tempFtrData[editingIndex1].subOpts[editingIndex2].iconUrl;
+                                            delete tempFtrData[editingIndex1].subOpts[editingIndex2].matSym;
+                                        }
+                                        ftrUpdater();
+                                    }
+                                }}),
+                            ]));
+                        }
+                    })]),
+                    ce("span", {className: "rSectFtrItemLogoIcon"}, [rSectFtrSubItemLogoIconChild]),
+                    ce("span", {className: "rSectNavFtrSubItemText"}, [tempFtrData[index1]["subOpts"][index2].text]),
+                    ce("span", {className: "rSectNavFtrSubItemLink"}, [tempFtrData[index1]["subOpts"][index2].link]),
+                ]))
+            }
+        }
+
+
+        let rSectFtrItemLogoIconChild="";
+        if(tempFtrData[index1].matSym){rSectFtrItemLogoIconChild = matSym(tempFtrData[index1].matSym || "link_off")}
+        else if(tempFtrData[index1].iconUrl){rSectFtrItemLogoIconChild = ce("img", {src: tempFtrData[index1].iconUrl || ""});}
+
+        rSectFtrItemCont.append(ce("div", {className: "rSectNavFtrItem", index1: index1}, [
+            ce("div", {className: "rSectNavFtrItemData"}, [
+                ce("span", {className: "rBtn"}, [matSym("arrow_upward", {
+                    onclick: function(){
+                        tempFtrData.splice(this.parentNode.parentNode.parentNode.index1-1, 0, tempFtrData.splice(this.parentNode.parentNode.parentNode.index1, 1)[0]);
+                        ftrUpdater();
+                    }
+                })]),
+                ce("span", {className: "rBtn"}, [matSym("arrow_downward", {
+                    onclick: function(){
+                        tempFtrData.splice(this.parentNode.parentNode.parentNode.index1+1, 0, tempFtrData.splice(this.parentNode.parentNode.parentNode.index1, 1)[0]);
+                        ftrUpdater();
+                    }
+                })]),
+                ce("span", {className: "rBtn"}, [matSym("edit", {
+                    onclick: function(){
+                        let editingIndex1 = this.parentNode.parentNode.parentNode.index1;
+                        createOP("Edit", ce("div", {style: "display:flex;flex-direction:column;"}, [
+                            ce("input", {id: "ftrItemMatSymIO", placeholder: "MatSym (More priority)", value: tempFtrData[editingIndex1].matSym || ""}),
+                            ce("input", {id: "ftrItemIconLinkIO", placeholder: "Icon (Less priority)", value: tempFtrData[editingIndex1].iconUrl || "", style: "margin-top: 10px"}),
+                            ce("input", {id: "ftrItemTextIO", placeholder: "Text", value: tempFtrData[editingIndex1].text || "", style: "margin-top: 10px"}),
+                            ce("div", {className: "rBtn", style: "margin-top: 10px;", innerText: "Delete", onclick: function(){
+                                document.getElementById("overPage").style.display = "none";
+                                tempFtrData.splice(editingIndex1, 1);
+                                ftrUpdater();
+                            }}),
+                            ce("div", {className: "rBtn", style: "margin-top: 10px;border-color: var(--color10);color: var(--color10);", innerText: "Save", onclick: function(){
+                                let ftrItemMatSymIO=document.getElementById("ftrItemMatSymIO");
+                                let ftrItemIconLinkIO=document.getElementById("ftrItemIconLinkIO");
+                                let ftrItemTextIO=document.getElementById("ftrItemTextIO");
+                                if(ftrItemTextIO.value.length > 0){
+                                    document.getElementById("overPage").style.display = "none";
+                                    tempFtrData[editingIndex1].text = ftrItemTextIO.value;
+
+                                    if(ftrItemMatSymIO.value!=""){
+                                        delete tempFtrData[editingIndex1].iconUrl;
+                                        tempFtrData[editingIndex1].matSym = ftrItemMatSymIO.value;
+                                    }else if(ftrItemIconLinkIO.value!=""){
+                                        delete tempFtrData[editingIndex1].matSym;
+                                        tempFtrData[editingIndex1].iconUrl = ftrItemIconLinkIO.value;
+                                    }else{
+                                        delete tempFtrData[editingIndex1].iconUrl;
+                                        delete tempFtrData[editingIndex1].matSym;
+                                    }
+
+                                    ftrUpdater();
+                                }
+                            }}),
+                        ]));
+                    }
+                })]),
+                ce("span", {className: "rBtn"}, [matSym("add", {
+                    onclick: function(){
+                        let editingIndex1 = this.parentNode.parentNode.parentNode.index1;
+                        createOP("Add Ftr SubItem", ce("div", {style: "display:flex;flex-direction:column;"}, [
+                            ce("input", {id: "ftrItemMatSymIO", placeholder: "MatSym (More priority)"}),
+                            ce("input", {id: "ftrItemIconLinkIO", placeholder: "Icon (Less priority)", style: "margin-top: 10px"}),
+                            ce("input", {id: "ftrItemTextIO", placeholder: "Text", style: "margin-top: 10px"}),
+                            ce("input", {id: "ftrItemLinkIO", placeholder: "Link", style: "margin-top: 10px"}),
+                            ce("div", {className: "rBtn", style: "margin-top: 10px;", innerText: "Add", onclick: function(){
+                                let ftrItemMatSymIO=document.getElementById("ftrItemMatSymIO");
+                                let ftrItemIconLinkIO=document.getElementById("ftrItemIconLinkIO");
+                                let ftrItemTextIO=document.getElementById("ftrItemTextIO");
+                                let ftrItemLinkIO=document.getElementById("ftrItemLinkIO");
+                                if(ftrItemTextIO.value.length > 0 && ftrItemLinkIO.value.length > 0){
+                                    document.getElementById("overPage").style.display = "none";
+                                    
+                                    let ftrSubItem = {
+                                        text: ftrItemTextIO.value,
+                                        link: ftrItemLinkIO.value,
+                                    }
+                                    if(ftrItemMatSymIO.value!=""){
+                                        delete ftrSubItem.iconUrl;
+                                        ftrSubItem.matSym = ftrItemMatSymIO.value;
+                                    }else if(ftrItemIconLinkIO.value!=""){
+                                        delete ftrSubItem.matSym;
+                                        ftrSubItem.iconUrl = ftrItemIconLinkIO.value;
+                                    }else{
+                                        delete ftrSubItem.iconUrl;
+                                        delete ftrSubItem.matSym;
+                                    }
+
+                                    if (typeof(tempFtrData[editingIndex1].subOpts)!="object"){tempFtrData[editingIndex1].subOpts = [];}
+                                    tempFtrData[editingIndex1].subOpts.push(ftrSubItem);
+
+                                    ftrUpdater();
+                                }
+                            }}),
+                        ]));
+                    }
+                })]),
+                ce("span", {className: "rSectFtrItemLogoIcon"}, [rSectFtrItemLogoIconChild]),
+                ce("span", {className: "rSectNavFtrItemText"}, [tempFtrData[index1].text])
+            ]),
+            rSectNavFtrSubItemCont
+        ]))
+    }
+}
+function addFtrItem(){
+    createOP("Add Ftr Item", ce("div", {style: "display:flex;flex-direction:column;"}, [
+        ce("input", {id: "ftrItemMatSymIO", placeholder: "MatSym (More priority)"}),
+        ce("input", {id: "ftrItemIconLinkIO", placeholder: "Icon (Less priority)", style: "margin-top: 10px"}),
+        ce("input", {id: "ftrItemTextIO", placeholder: "Text", style: "margin-top: 10px"}),
+        ce("div", {className: "rBtn", style: "margin-top: 10px;", innerText: "Add", onclick: function(){
+            let ftrItemMatSymIO=document.getElementById("ftrItemMatSymIO");
+            let ftrItemIconLinkIO=document.getElementById("ftrItemIconLinkIO");
+            let ftrItemTextIO=document.getElementById("ftrItemTextIO");
+            if(ftrItemTextIO.value.length > 0){
+                document.getElementById("overPage").style.display = "none";
+                
+                let ftrItem = {
+                    text: ftrItemTextIO.value,
+                }
+                if(ftrItemMatSymIO.value!=""){
+                    delete ftrItem.iconUrl;
+                    ftrItem.matSym = ftrItemMatSymIO.value;
+                }else if(ftrItemIconLinkIO.value!=""){
+                    delete ftrItem.matSym;
+                    ftrItem.iconUrl = ftrItemIconLinkIO.value;
+                }else{
+                    delete ftrItem.iconUrl;
+                    delete ftrItem.matSym;
+                }
+                tempFtrData.push(ftrItem);
+
+                ftrUpdater();
+            }
+        }}),
+    ]));
+}
+function ftrUpdt(){
+    if(tempFtrData){
+        db.collection("siteData").doc("common").get().then((commonRef)=>{
+            let commonData = commonRef.data();
+            if(commonData != undefined){
+                commonData["ftrData"] = tempFtrData;
+                db.collection("siteData").doc("common").set(commonData);
+            }else{
+                db.collection("siteData").doc("common").set({ftrData: tempFtrData});
+            }
+            createOP("Success", ce("div", {style: "display:flex;flex-direction:column;align-items:center;justify-content:center;"}, [
+                matSym("check_circle", {style: "margin-bottom:5px"}), ce("div", {}, ["Footer Updated!", ce("br"), "Reload the Page!"]),
+            ]));
+        });
+    }
+}
+
 
 // Site Stuff
 function siteNameUpdt(){
