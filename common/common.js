@@ -400,7 +400,9 @@ function createArticle(artclData){
             ce("div", {className: "rSectGrayTxt"}, [matSym("photo", {style: "margin-right: 5px;"}), ce("span", {innerText: "Images"})]),
             ce("div", {className: "artclImgCont"}, function(){
                 let retVal=[];
-                for(index in artclData.images){retVal.push(ce("img", {src: artclData.images[index]}));}
+                for(index in artclData.images){
+                    retVal.push(ce("img", {src: artclData.images[index], onclick: function(){createOP("Image", ce("img", {src: this.src}));}}));
+                }
                 return retVal;
             }()),
         ]),

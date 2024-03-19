@@ -77,7 +77,7 @@
                 </div>
             </div>
         </div>
-        <div class="rSect">
+        <div class="rSect" style="margin-bottom: 0;">
             <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">delete</span>Delete Board</span><span class="rBtn" onclick="javascript:boardDel()">Delete</span></div>
             <div class="rSectBody">
                 <div class="rSectFormItem">
@@ -93,6 +93,18 @@
                 <div class="rSectFormItem">
                     <span class="rSectFormTtl">Board</span>
                     <select id="boardDelIDIO">
+                        <option value="Notice">Notice</option>
+                        <option value="About">About</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="rSect">
+            <div class="rSectTop"><span class="rSectTitle"><span class="material-symbols-outlined" style="margin-right: 5px;">open_in_new</span>Open Board</span><span class="rBtn" onclick="javascript:boardOpen()">Open</span></div>
+            <div class="rSectBody">
+                <div class="rSectFormItem">
+                    <span class="rSectFormTtl">Board</span>
+                    <select id="boardOpenIDIO">
                         <option value="Notice">Notice</option>
                         <option value="About">About</option>
                     </select>

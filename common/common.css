@@ -80,7 +80,7 @@ hr{margin: 10px 15px;border: 1px solid;color: var(--color30Shade);border-radius:
 /* OverPage */
 #overPage{
     display: none;justify-content: center;align-items: center;flex-direction: column;
-    position: fixed;
+    position: fixed;z-index: 4;
     top: 0;bottom: 0;left: 0;right: 0;
     background: #000000aa;
     backdrop-filter: brightness(80%) contrast(110%) saturate(110%);

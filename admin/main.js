@@ -52,11 +52,12 @@ function artclSetBoards(){
     // Sets Board Info for 3 Fields: Add Article, Delete Article, Delete Board
     let boardIDsCopy = commonDBData.boardIDs;
 
+    let boardOpenIDIO = document.getElementById("boardOpenIDIO");
     let boardDelIDIO = document.getElementById("boardDelIDIO");
     let artclDelBoardIO = document.getElementById("artclDelBoardIO");
     let artclBoardIO = document.getElementById("artclBoardIO");
 
-    boardDelIDIO.innerHTML = "";artclDelBoardIO.innerHTML = "";artclBoardIO.innerHTML = "";
+    boardOpenIDIO.innerHTML = "";boardDelIDIO.innerHTML = "";artclDelBoardIO.innerHTML = "";artclBoardIO.innerHTML = "";
 
     if (boardIDsCopy == undefined){boardIDsCopy = []}
     if (boardIDsCopy.includes("About") == false){boardIDsCopy.unshift("About");}
@@ -64,9 +65,10 @@ function artclSetBoards(){
 
     for(index in boardIDsCopy){
         let boardID = boardIDsCopy[index];
-        artclBoardIO.append(ce("option", {value: boardID}, [boardID]));
-        artclDelBoardIO.append(ce("option", {value: boardID}, [boardID]));
+        boardOpenIDIO.append(ce("option", {value: boardID}, [boardID]));
         boardDelIDIO.append(ce("option", {value: boardID}, [boardID]));
+        artclDelBoardIO.append(ce("option", {value: boardID}, [boardID]));
+        artclBoardIO.append(ce("option", {value: boardID}, [boardID]));
     }
 }
 function artclSetDate(){artclDateIO.value = new Date().toISOString().split(".")[0]}
@@ -122,7 +124,7 @@ function artclPost(){
         title: artclTtlIO.value,
         boardID: artclBoardIO.value,
         date: new Date(artclDateIO.value).getTime(),
-        body: artclBodyIO.value,
+        body: function (){let returnVal="";artclBodyIO.value.split("\n").forEach((line) => {returnVal=returnVal+line+"  \n"});return returnVal}(),
         images: imageUrls,
         storageDeps: storageDependencies
     }
@@ -133,7 +135,13 @@ function artclPost(){
             createOP("Success", ce("div", {style: "display:flex;flex-direction:column;"}, [
                 ce("div", {style: "display:flex;align-items:center;margin-bottom:20px;"}, [matSym("check_circle", {style: "margin-right:5px"}), "Article Posted Successfully!"]),
                 ce("div", {}, [`Article Board: ${artclBoardIO.value}`]),
-                ce("div", {}, [`Article ID: ${artclRef.id}`])
+                ce("div", {}, [`Article ID: ${artclRef.id}`]),
+                ce("div", {
+                    style: "text-decoration: underline;cursor: pointer;",
+                    onclick: function(){window.open(`/article/?boardID=${artclBoardIO.value}&artclID=${artclRef.id}`, target="_blank");}
+                }, [
+                    `Article URL: "/article/?boardID=${artclBoardIO.value}&artclID=${artclRef.id}"`
+                ])
             ]));
             
             // Add to CommonDB
@@ -227,7 +235,13 @@ function boardAdd(){
             
             createOP("Success", ce("div", {style: "display:flex;flex-direction:column;"}, [
                 ce("div", {style: "display:flex;align-items:center;margin-bottom:20px;"}, [matSym("check_circle", {style: "margin-right:5px"}), "Board Added Successfully!"]),
-                ce("div", {}, [`Board: ${boardAddIDIO.value}`])
+                ce("div", {}, [`Board: ${boardAddIDIO.value}`]),
+                ce("div", {
+                    style: "text-decoration: underline;cursor: pointer;",
+                    onclick: function(){window.open(`/allArticle/?boardID=${boardAddIDIO.value}`, target="_blank");}
+                }, [
+                    `Board URL: "/allArticle/?boardID=${boardAddIDIO.value}"`
+                ])
             ]));
         });
     }
@@ -249,6 +263,11 @@ function boardDel(){
     });
 
     window.open("https://console.firebase.google.com", target="_blank");
+}
+function boardOpen(){
+    let boardOpenIDIO = document.getElementById("boardOpenIDIO");
+    
+    window.open(`/allArticle/?boardID=${boardOpenIDIO.value}`, target="_blank");
 }
 
 
@@ -507,7 +526,7 @@ function prsnAdd(){
             name: prsnAddNameIO.value,
             post: prsnAddPostIO.value,
             image: imageUrls[0],
-            body: prsnAddBodyIO.value,
+            body: function (){let returnVal="";prsnAddBodyIO.value.split("\n").forEach((line) => {returnVal=returnVal+line+"  \n"});return returnVal}(),
             storageDeps: storageDependencies
         }
         prsnAddImages=[];prsnImgContUpdate();
@@ -642,10 +661,10 @@ function shrtDescUpdt(){
         db.collection("siteData").doc("common").get().then((commonRef)=>{
             let commonData = commonRef.data();
             if(commonData != undefined){
-                commonData["shortDescription"] = shrtDescIO;
+                commonData["shortDescription"] = function (){let returnVal="";shrtDescIO.split("\n").forEach((line) => {returnVal=returnVal+line+"  \n"});return returnVal}();
                 db.collection("siteData").doc("common").set(commonData);
             }else{
-                db.collection("siteData").doc("common").set({shortDescription: shrtDescIO});
+                db.collection("siteData").doc("common").set({shortDescription: function (){let returnVal="";shrtDescIO.split("\n").forEach((line) => {returnVal=returnVal+line+"  \n"});return returnVal}()});
             }
             createOP("Success", ce("div", {style: "display:flex;flex-direction:column;align-items:center;justify-content:center;"}, [
                 matSym("check_circle", {style: "margin-bottom:5px"}), ce("div", {}, ["Short Description Updated!"]),
