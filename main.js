@@ -2,7 +2,7 @@ initPage({
     pageName: "Home",
     extraCSS: `
     @media only screen and (max-width: ${mobileUiThreshold}px){
-        #sldshw{height: 250px;margin-top: 20px;}
+        #sldshw{height: 250px;margin-top: 50px;}
         #siteNameCont{font-size: 25px;}
 
         .rSectTitle{font-size:20px}
@@ -42,6 +42,8 @@ function initSldshw(sldshwData){
 }
 function sldshwSetIndex(index){
     let sldshwImgCont = document.getElementById("sldshwImgCont");
+    let sldshwImgBlurOverlayCont = document.getElementById("sldshwImgBlurOverlayCont");
+    sldshwImgBlurOverlayCont.children[0].style.display = "block";
     if (index < sldshwLength && index >= 0){
         sldshwImgCont.children[currentSldshowIndex].style.display = "none";
         sldshwImgCont.children[index].style.display = "block";
@@ -53,6 +55,8 @@ function sldshwSetIndex(index){
         sldshwDotCont.children[index].style.textShadow = "var(--color10) 0px 0px 10px";
 
         currentSldshowIndex = index;
+
+        sldshwImgBlurOverlayCont.children[0].src = sldshwImgCont.children[index].src;
     }
 }
 function sldshwNext(){if (currentSldshowIndex+1 >= sldshwLength){sldshwSetIndex(0);}else{sldshwSetIndex(currentSldshowIndex+1);}}

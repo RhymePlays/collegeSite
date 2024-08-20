@@ -6,11 +6,23 @@
 #sldshwImgCont{
     position: absolute;
     width: inherit;height: inherit;
+    background-color: var(--color60);
 }
 #sldshwImgCont img{
     position: absolute;
     width: inherit;height: inherit;
-    object-fit: cover;
+    object-fit: contain;
+    display: none;
+}
+#sldshwImgBlurOverlayCont{
+    position: absolute;
+    width: inherit;height: inherit;
+    backdrop-filter: blur(200px);
+}
+#sldshwImgBlurOverlayCont img{
+    position: absolute;
+    width: inherit;height: inherit;
+    object-fit: contain;
     display: none;
 }
 #sldshwLRBtnCont{

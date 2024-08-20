@@ -96,7 +96,8 @@ hr{margin: 10px 15px;border: 1px solid;color: var(--color30Shade);border-radius:
 
 /* SUB-NAV */
 #subNavCont{display: flex;flex-direction: column;align-items: center}
-#subNavImg{max-width: 100%;min-width: 100%;max-height: 250px;min-height: 250px;}
+#subNavImg{max-width: 100%;min-width: 100%;max-height: 350px;min-height: 350px;}
+#subNavImgBlurOverlay{max-width: 100%;min-width: 100%;max-height: 350px;min-height: 350px;}
 #subNavTxt{margin-top: 30px;font-size: 35px;font-weight: 600;text-align: center;color: var(--color10);}
 #subNavSubTxt{margin-top: 10px;margin-bottom: 30px;font-size: 25px;text-align: center;color: var(--color10Tint);}
 

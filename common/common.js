@@ -194,7 +194,7 @@ function createNav(navData, forceMobile=false){
             #navPiCont{position: relative;top: 15px;width: 100%;display: flex;justify-content: center;}
             #navPi{height:80px;width:80px;border-radius: 50%;background: linear-gradient(180deg, #F5F5F5 0%, #a5a5a5 100%);box-shadow: var(--color60) 0px 0px 20px 0px, var(--color60) 0px 0px 5px 0px;}
             #navPi img{width:inherit;height:inherit;border-radius:50%;object-fit:contain;}
-            #subNavCont{margin-top:30px}
+            #subNavCont{margin-top:50px}
         `);
 
         let drwrBack = ce("drwrBack");
@@ -338,7 +338,9 @@ function createSubNav(subNavData){
         let subNavCont = document.getElementById("subNavCont");
         subNavCont.innerHTML = "";
         subNavCont.append(
-            ce("div", {id: "subNavImg", style: `background: url("${subNavData.image}");background-repeat: no-repeat;background-position: center;background-size: cover`}),
+            ce("div", {id: "subNavImg", style: `background: url("${subNavData.image}");background-color: var(--color60);background-repeat: no-repeat;background-position: center;background-size: contain;`}, [
+                ce("div", {id: "subNavImgBlurOverlay", style: `background: url("${subNavData.image}");background-repeat: no-repeat;background-position: center;background-size: contain;backdrop-filter: blur(200px);`})
+            ]),
             ce("div", {id: "subNavTxt", innerText: subNavData.text || siteName}),
             ce("div", {id: "subNavSubTxt", innerText: subNavData.subText || siteName})
         );
@@ -608,7 +610,7 @@ function initPage(arg={pageName: undefined, subNavImage: undefined, onCommonLoad
                 --mobileUiThreshold: ${mobileUiThreshold}px;
             }
             @media only screen and (max-width: ${mobileUiThreshold}px){
-                #subNavImg{max-height: 150px;min-height: 150px;}#subNavTxt{font-size: 25px;}#subNavSubTxt{font-size: 18px;}
+                #subNavImg{max-height: 150px;min-height: 150px;}#subNavImgBlurOverlay{max-height: 150px;min-height: 150px;}#subNavTxt{font-size: 25px;}#subNavSubTxt{font-size: 18px;}
             }
         `, arg.extraCSS);
         document.head.append(commonCSSExtra);
