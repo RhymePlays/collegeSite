@@ -13,7 +13,7 @@ hr{margin: 10px 15px;border: 1px solid;color: var(--color30Shade);border-radius:
 .frostFX{
     background: #75757532;background: linear-gradient(180deg, #75757532 0%, #35353532 100%);
     backdrop-filter: blur(15px) brightness(90%) contrast(110%) saturate(110%);
-    border: solid #00000040 2px;
+    /* border: solid #00000040 2px; */
     box-shadow: #15151580 0px 0px 50px 20px, #15151555 0px 0px 15px 0px, inset 0px 0px 15px #ffffff40;
 }
 

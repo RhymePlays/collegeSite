@@ -114,7 +114,7 @@ function createNav(navData, forceMobile=false){
                 classList: "rNavBtn material-symbols-outlined",
                 onclick: function(){drwr.style.display = "none";drwrBack.style.display = "none";navCont.style.height = "auto"},
             })
-        )
+        );
         
         drwrBody = ce("div");
         drwrBody.id = "drwrBody";
@@ -122,10 +122,14 @@ function createNav(navData, forceMobile=false){
         let drwr = ce("div");
         drwr.id = "drwr";
         drwr.className = "frostFX";
-        drwr.append(drwrTop, drwrBody)
+        drwr.append(drwrTop, drwrBody);
         
+        let navPiImgSrc;
+
         for (index1 in navData){
-            if (navData[index1].logo){}
+            if (navData[index1].logo){
+                navPiImgSrc = navData[index1].src
+            }
             else{
                 let drwrOpts = ce("span");
                 drwrOpts.className = "drwrOpts rNavBtn";
@@ -155,7 +159,7 @@ function createNav(navData, forceMobile=false){
 
 
         let navPiImg = ce("img");
-        navPiImg.src = navData[index1].src || "/logo.png";
+        navPiImg.src = navPiImgSrc || "/logo.png";
         let navPi = ce("div");
         navPi.id = "navPi";
         navPi.onclick = function(){location.href = "/";};
@@ -167,14 +171,14 @@ function createNav(navData, forceMobile=false){
         let menuSym = matSym("menu");
         menuSym.classList = "rNavBtn material-symbols-outlined";
         menuSym.onclick = function(){drwr.style.display = "flex";drwrBack.style.display = "block";navCont.style.height = "100%"}
-        let homeSym = matSym("home");
-        homeSym.classList = "rNavBtn material-symbols-outlined";
-        homeSym.onclick = function(){location.href = "/";}
+        let returnToTopSym = matSym("arrow_upward");
+        returnToTopSym.classList = "rNavBtn material-symbols-outlined";
+        returnToTopSym.onclick = function(){location.href = "#";}
 
         let nav = ce("div");
         nav.id = "nav";
         nav.className = "frostFX";
-        nav.append(menuSym, navPiCont, homeSym);
+        nav.append(menuSym, navPiCont, returnToTopSym);
 
         let css = ce("style"); //ToDo: MobileUI Nav CSS to DOM.
         css.append(`
@@ -189,7 +193,7 @@ function createNav(navData, forceMobile=false){
             .drwrOpts{font-weight: 600;font-size: 16px;color: var(--color30);}
             .drwrSubOpts{font-weight: 400;font-size: 14px;color: var(--color30Shade);margin-left: 25px;}
             #navCont{z-index:3;position: fixed;top: 0px;width: 100%;text-shadow: var(--color60) 0px 0px 10px, var(--color60) 0px 0px 5px;}
-            #nav{color: var(--color30);display: flex;align-items: center;justify-content: center;height: 60px;padding: 0px 10px;border-radius: 0px 0px 25px 25px;}
+            #nav{color: var(--color30);display: flex;align-items: center;justify-content: center;height: 60px;padding: 0px 10px;border-radius: 0px 0px 15px 15px;}
             #nav .material-symbols-outlined{font-size: 30px;}
             #navPiCont{position: relative;top: 15px;width: 100%;display: flex;justify-content: center;}
             #navPi{height:80px;width:80px;border-radius: 50%;background: linear-gradient(180deg, #F5F5F5 0%, #a5a5a5 100%);box-shadow: var(--color60) 0px 0px 20px 0px, var(--color60) 0px 0px 5px 0px;}
