@@ -72,7 +72,7 @@
     pointer-events: none;
 }
 #sldshwAPBtn{
-    margin: 10px;
+    margin: 10px 10px 35px 10px;
     pointer-events: auto;
 }
 #sldshw .rBtn{border:0;}

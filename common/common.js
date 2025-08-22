@@ -400,14 +400,14 @@ function createArticle(artclData){
             ce("div", {className: "rSectGrayTxt"}, [matSym("schedule", {style: "margin-right: 5px;"}), ce("b", {innerText: "Date:", style: "margin-right: 5px;"}), ce("span", {innerText: `${dateObj.getDate()}/${dateObj.getMonth()}/${dateObj.getFullYear()}`})]),
             ce("div", {className: "rSectGrayTxt"}, [matSym("fingerprint", {style: "margin-right: 5px;"}), ce("b", {innerText: "WebID:", style: "margin-right: 5px;"}), ce("span", {innerText: artclData.artclID})]),
         ]),
-        ce("div", {className: "artclDiv artclBody"}, [parseMD(artclData.body)]),
+        ce("div", {className: "artclDiv artclBody", style: "overflow-x: auto"}, [parseMD(artclData.body)]),
         ce("div", {className: "artclDiv"}, [
             ce("hr"),
             ce("div", {className: "rSectGrayTxt"}, [matSym("photo", {style: "margin-right: 5px;"}), ce("span", {innerText: "Images"})]),
             ce("div", {className: "artclImgCont"}, function(){
                 let retVal=[];
                 for(index in artclData.images){
-                    retVal.push(ce("img", {src: artclData.images[index], onclick: function(){createOP("Image", ce("img", {src: this.src}));}}));
+                    retVal.push(ce("img", {src: artclData.images[index], onclick: function(){createOP("Image", ce("img", {src: this.src, style:"max-height: 85vh;max-width: 90vw"}));}}));
                 }
                 return retVal;
             }()),
