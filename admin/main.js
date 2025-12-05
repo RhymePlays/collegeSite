@@ -1,4 +1,11 @@
-var storageRef = firebase.storage().ref();
+// Appwrite
+let awURL = `https://[REGION].cloud.appwrite.io/v1`;
+let awID = '';
+const aw = new Appwrite.Client();
+aw.setEndpoint(awURL);
+aw.setProject(awID);
+awAcc = new Appwrite.Account(aw); // mainUser
+awStg = new Appwrite.Storage(aw); // mainBucket
 
 // Common
 initPage({
@@ -29,8 +36,13 @@ function askToSignIn(){
             if(signInEmail.length > 0 && signInPass.length > 0){
                 document.getElementById("overPage").style.display = "none";
     
-                firebase.auth().signInWithEmailAndPassword(signInEmail, signInPass).then((arg)=>{
+                firebase.auth().signInWithEmailAndPassword(signInEmail, signInPass).then(async (arg)=>{
                     document.getElementById("adminControls").style.display = "block";
+                    try{
+                        await awAcc.get();
+                    }catch(e){
+                        awAcc.createEmailPasswordSession(signInEmail, signInPass);
+                    }
                 }).catch((e)=>{
                     createOP("Error!", ce("div", {}, ["Failed to Sign In!"]));
                 });
@@ -63,8 +75,8 @@ function artclSetBoards(){
     if (boardIDsCopy.includes("About") == false){boardIDsCopy.unshift("About");}
     if (boardIDsCopy.includes("Notice") == false){boardIDsCopy.unshift("Notice");}
 
-    for(index in boardIDsCopy){
-        let boardID = boardIDsCopy[index];
+    for(i in boardIDsCopy){
+        let boardID = boardIDsCopy[i];
         boardOpenIDIO.append(ce("option", {value: boardID}, [boardID]));
         boardDelIDIO.append(ce("option", {value: boardID}, [boardID]));
         artclDelBoardIO.append(ce("option", {value: boardID}, [boardID]));
@@ -74,12 +86,12 @@ function artclSetBoards(){
 function artclSetDate(){artclDateIO.value = new Date().toISOString().split(".")[0]}
 function artclImgContUpdate(){
     artclImgCont.innerHTML = "";
-    for (index in artclImages){
+    for (i in artclImages){
         artclImgCont.append(ce("img", {
-            src: artclImages[index].url,
-            imgID: index,
+            src: artclImages[i].url,
+            imgID: i,
             onclick: function(){
-                if (artclImages[this.imgID].storagePath){storageRef.child(artclImages[this.imgID].storagePath).delete()};
+                if (artclImages[this.imgID].bID){awStg.deleteFile(artclImages[this.imgID].bID, artclImages[this.imgID].fID)};
                 artclImages.splice(this.imgID, 1);
                 artclImgContUpdate();
             }
@@ -91,22 +103,19 @@ function addArtclImgLink(){
         ce("input", {id: "tempURLIO", placeholder: "URL"}),
         ce("div", {className: "rBtn", style: "margin-top: 10px", innerText: "Add", onclick: function(){
             let link=document.getElementById("tempURLIO").value;
-            if(link.length > 0){artclImages.push({url: link, storagePath: false});artclImgContUpdate();document.getElementById("overPage").style.display = "none";}
+            if(link.length > 0){artclImages.push({url: link, bID: false});artclImgContUpdate();document.getElementById("overPage").style.display = "none";}
         }})
     ]));
 }
 function addArtclImgFile(){
     ce("input", {type: "file", multiple: "true", accept: ".png,.jpg,.jpeg,.webp", onchange: function(inputArg){
         let imgFiles = inputArg.target.files;
-        for (index in imgFiles){
-            if(typeof(imgFiles[index]) == "object"){
-                storageRef.child(`articleImages/${(new Date().getTime()).toString(16).toUpperCase()}${(Math.floor(Math.random() * 10000)).toString(16).toUpperCase()}_${index}`).put(imgFiles[index]).then((gsFileRef) => {
-                    gsFileRef.ref.getDownloadURL().then((url) => {
-
-                        artclImages.push({url: url, storagePath: gsFileRef.ref.fullPath});
-                        artclImgContUpdate();
-                    
-                    });
+        for (i in imgFiles){
+            if(typeof(imgFiles[i]) == "object"){
+                awStg.createFile("mainBucket", `a-${(new Date().getTime()).toString(30).toUpperCase()}${(Math.floor(Math.random() * 10000)).toString(16).toUpperCase()}_${i}`, imgFiles[i]).then((awFile)=>{
+                    let url = `${awURL}/storage/buckets/${awFile.bucketId}/files/${awFile.$id}/view?project=${awID}`;
+                    artclImages.push({url: url, bID: awFile.bucketId, fID: awFile.$id});
+                    artclImgContUpdate();
                 });
             }
         }
@@ -115,9 +124,9 @@ function addArtclImgFile(){
 function artclPost(){
     let imageUrls = [];
     let storageDependencies = [];
-    for (index in artclImages){
-        imageUrls.push(artclImages[index].url);
-        if (artclImages[index].storagePath){storageDependencies.push(artclImages[index].storagePath);}
+    for (i in artclImages){
+        imageUrls.push(artclImages[i].url);
+        if (artclImages[i].bID){storageDependencies.push([artclImages[i].bID, artclImages[i].fID]);}
     }
 
     let artclData = {
@@ -181,7 +190,7 @@ function artclDel(){
                 let deps = artclRef.data().storageDeps;
                 db.collection(artclDelBoardIO.value).doc(artclDelIDIO.value).delete();
                 for (depIndex in deps){
-                    storageRef.child(deps[depIndex]).delete();
+                    awStg.deleteFile(deps[depIndex].bID, deps[depIndex].fID);
                 }
 
                 createOP("Done", ce("div", {style: "display:flex;flex-direction:column;"}, [
@@ -195,9 +204,9 @@ function artclDel(){
                     db.collection("siteData").doc("common").get().then((commonRef)=>{
                         let commonDBDataLatest = commonRef.data();
                         let hasChanged = false;
-                        for (index in commonDBDataLatest.noticeSnippet){
-                            if (commonDBDataLatest.noticeSnippet[index].artclID == artclDelIDIO.value){
-                                commonDBDataLatest.noticeSnippet.splice(index, 1);
+                        for (i in commonDBDataLatest.noticeSnippet){
+                            if (commonDBDataLatest.noticeSnippet[i].artclID == artclDelIDIO.value){
+                                commonDBDataLatest.noticeSnippet.splice(i, 1);
                                 hasChanged = true;
                             };
                         }
@@ -252,9 +261,9 @@ function boardDel(){
     db.collection("siteData").doc("common").get().then((commonRef)=>{
         let commonDBDataLatest = commonRef.data();
         let hasChanged = false;
-        for (index in commonDBDataLatest.boardIDs){
-            if (commonDBDataLatest.boardIDs[index] == boardDelIDIO.value){
-                commonDBDataLatest.boardIDs.splice(index, 1);
+        for (i in commonDBDataLatest.boardIDs){
+            if (commonDBDataLatest.boardIDs[i] == boardDelIDIO.value){
+                commonDBDataLatest.boardIDs.splice(i, 1);
                 hasChanged = true;
             };
         }
@@ -278,12 +287,12 @@ let photoAddImgCont = document.getElementById("photoAddImgCont");
 
 function photosImgContUpdate(){
     photoAddImgCont.innerHTML = "";
-    for (index in addPhotosImages){
+    for (i in addPhotosImages){
         photoAddImgCont.append(ce("img", {
-            src: addPhotosImages[index].url,
-            imgID: index,
+            src: addPhotosImages[i].url,
+            imgID: i,
             onclick: function(){
-                if (addPhotosImages[this.imgID].storagePath){storageRef.child(addPhotosImages[this.imgID].storagePath).delete()};
+                if (addPhotosImages[this.imgID].bID){awStg.deleteFile(addPhotosImages[this.imgID].bID, addPhotosImages[this.imgID].fID)};
                 addPhotosImages.splice(this.imgID, 1);
                 photosImgContUpdate();
             }
@@ -295,22 +304,19 @@ function addPhotoImgLink(){
         ce("input", {id: "tempURLIO", placeholder: "URL"}),
         ce("div", {className: "rBtn", style: "margin-top: 10px", innerText: "Add", onclick: function(){
             let link=document.getElementById("tempURLIO").value;
-            if(link.length > 0){addPhotosImages.push({url: link, storagePath: false});photosImgContUpdate();document.getElementById("overPage").style.display = "none";}
+            if(link.length > 0){addPhotosImages.push({url: link, bID: false});photosImgContUpdate();document.getElementById("overPage").style.display = "none";}
         }})
     ]));
 }
 function addPhotoImgFile(){
     ce("input", {type: "file", multiple: "true", accept: ".png,.jpg,.jpeg,.webp", onchange: function(inputArg){
         let imgFiles = inputArg.target.files;
-        for (index in imgFiles){
-            if(typeof(imgFiles[index]) == "object"){
-                storageRef.child(`photos/${(new Date().getTime()).toString(16).toUpperCase()}${(Math.floor(Math.random() * 10000)).toString(16).toUpperCase()}_${index}`).put(imgFiles[index]).then((gsFileRef) => {
-                    gsFileRef.ref.getDownloadURL().then((url) => {
-
-                        addPhotosImages.push({url: url, storagePath: gsFileRef.ref.fullPath});
-                        photosImgContUpdate();
-                    
-                    });
+        for (i in imgFiles){
+            if(typeof(imgFiles[i]) == "object"){
+                awStg.createFile("mainBucket", `p-${(new Date().getTime()).toString(30).toUpperCase()}${(Math.floor(Math.random() * 10000)).toString(16).toUpperCase()}_${i}`, imgFiles[i]).then((awFile)=>{
+                    let url = `${awURL}/storage/buckets/${awFile.bucketId}/files/${awFile.$id}/view?project=${awID}`;
+                    addPhotosImages.push({url: url, bID: awFile.bucketId, fID: awFile.$id});
+                    photosImgContUpdate();
                 });
             }
         }
@@ -319,17 +325,17 @@ function addPhotoImgFile(){
 function photoAdd(){
     let imageUrls = [];
     let storageDependencies = [];
-    for (index in addPhotosImages){
-        imageUrls.push(addPhotosImages[index].url);
-        if (addPhotosImages[index].storagePath){storageDependencies.push(addPhotosImages[index].storagePath);}
+    for (i in addPhotosImages){
+        imageUrls.push(addPhotosImages[i].url);
+        if (addPhotosImages[i].bID){storageDependencies.push([addPhotosImages[i].bID, addPhotosImages[i].fID]);}
     }
 
     if (addPhotosImages.length > 0){
         let retVal = [];
-        for (index in addPhotosImages){
+        for (i in addPhotosImages){
             retVal.unshift({
-                url: imageUrls[index],
-                imgID: `${(new Date().getTime()).toString(16).toUpperCase()}${(Math.floor(Math.random() * 10000)).toString(16).toUpperCase()}_${index}`,
+                url: imageUrls[i],
+                imgID: `${(new Date().getTime()).toString(16).toUpperCase()}${(Math.floor(Math.random() * 10000)).toString(16).toUpperCase()}_${i}`,
                 date: new Date().getTime(),
                 caption: document.getElementById("photoAddCaptIO").value,
                 storageDeps: storageDependencies
@@ -342,21 +348,21 @@ function photoAdd(){
             if(photosDocData != undefined){
                 if ("allPhotos" in photosDocData){
                     if (document.getElementById("phtoOrderIO").value=="front"){
-                        for(index in retVal){photosDocData.allPhotos.unshift(retVal[index]);}
+                        for(i in retVal){photosDocData.allPhotos.unshift(retVal[i]);}
                     }else{
-                        let rvrstRetVal = [];for(index in retVal){rvrstRetVal.unshift(retVal[index]);}
-                        for (index in rvrstRetVal){photosDocData.allPhotos.push(rvrstRetVal[index]);}
+                        let rvrstRetVal = [];for(i in retVal){rvrstRetVal.unshift(retVal[i]);}
+                        for (i in rvrstRetVal){photosDocData.allPhotos.push(rvrstRetVal[i]);}
                     }
                     db.collection("siteData").doc("photos").set(photosDocData);
                 }
                 else{
                     photosDocData["allPhotos"] = [];
-                    for (index in retVal){photosDocData.allPhotos.unshift(retVal[index]);}
+                    for (i in retVal){photosDocData.allPhotos.unshift(retVal[i]);}
                     db.collection("siteData").doc("photos").set(photosDocData);
                 }
             }else{
                 let setVal = [];
-                for (index in retVal){setVal.unshift(retVal[index]);}
+                for (i in retVal){setVal.unshift(retVal[i]);}
                 db.collection("siteData").doc("photos").set({allPhotos: setVal});
             }
 
@@ -372,13 +378,13 @@ function photoDel(delPhotoID=undefined){
         db.collection("siteData").doc("photos").get().then((photosRef)=>{
             let photosDocData = photosRef.data();
             let hasChanged = false;
-            for (index in photosDocData.allPhotos){
-                if (photosDocData.allPhotos[index].imgID == delPhotoIDIO){
-                    for (depIndex in photosDocData.allPhotos[index].storageDeps){
-                        storageRef.child(photosDocData.allPhotos[index].storageDeps[depIndex]).delete();
+            for (i in photosDocData.allPhotos){
+                if (photosDocData.allPhotos[i].imgID == delPhotoIDIO){
+                    for (depIndex in photosDocData.allPhotos[i].storageDeps){
+                        awStg.deleteFile(photosDocData.allPhotos[i].storageDeps[depIndex].bID, photosDocData.allPhotos[i].storageDeps[depIndex].fID);
                     }
 
-                    photosDocData.allPhotos.splice(index, 1);
+                    photosDocData.allPhotos.splice(i, 1);
                     hasChanged = true;
                 };
             }
@@ -400,16 +406,16 @@ function pinnedPhtoAdd(){
     if(pinnedPhtoAddIDIO.value){
         db.collection("siteData").doc("photos").get().then((photosRef)=>{
             let photosDocData=photosRef.data();
-            for(index in photosDocData.allPhotos){
-                if(photosDocData.allPhotos[index].imgID==pinnedPhtoAddIDIO.value){
-                    let phtoData = photosDocData.allPhotos[index];
+            for(i in photosDocData.allPhotos){
+                if(photosDocData.allPhotos[i].imgID==pinnedPhtoAddIDIO.value){
+                    let phtoData = photosDocData.allPhotos[i];
                     db.collection("siteData").doc("common").get().then((commonRef)=>{
                         let commonData = commonRef.data();
                         if(commonData != undefined){
                             if ("pinnedPhotos" in commonData){
-                                for (index2 in commonData.pinnedPhotos){
-                                    if (commonData.pinnedPhotos[index2].imgID == pinnedPhtoAddIDIO.value){
-                                        commonData.pinnedPhotos.splice(index2, 1);break;
+                                for (i2 in commonData.pinnedPhotos){
+                                    if (commonData.pinnedPhotos[i2].imgID == pinnedPhtoAddIDIO.value){
+                                        commonData.pinnedPhotos.splice(i2, 1);break;
                                     };
                                 }
                                 if(document.getElementById("pinnedPhtoOrderIO").value=="front"){
@@ -445,9 +451,9 @@ function pinnedPhtoDel(pinnedPhtoDelID=undefined){
         db.collection("siteData").doc("common").get().then((commonRef)=>{
             let commonData = commonRef.data();
             let hasChanged = false;
-            for (index in commonData.pinnedPhotos){
-                if (commonData.pinnedPhotos[index].imgID == pinnedPhtoDelIDIO){
-                    commonData.pinnedPhotos.splice(index, 1);
+            for (i in commonData.pinnedPhotos){
+                if (commonData.pinnedPhotos[i].imgID == pinnedPhtoDelIDIO){
+                    commonData.pinnedPhotos.splice(i, 1);
                     hasChanged = true;
                 };
             }
@@ -470,12 +476,12 @@ let prsnAddBodyIO = document.getElementById("prsnAddBodyIO");
 
 function prsnImgContUpdate(){
     prsnAddImgCont.innerHTML = "";
-    for (index in prsnAddImages){
+    for (i in prsnAddImages){
         prsnAddImgCont.append(ce("img", {
-            src: prsnAddImages[index].url,
-            imgID: index,
+            src: prsnAddImages[i].url,
+            imgID: i,
             onclick: function(){
-                if (prsnAddImages[this.imgID].storagePath){storageRef.child(prsnAddImages[this.imgID].storagePath).delete()};
+                if (prsnAddImages[this.imgID].bID){awStg.deleteFile(prsnAddImages[this.imgID].bID, prsnAddImages[this.imgID].fID)};
                 prsnAddImages.splice(this.imgID, 1);
                 prsnImgContUpdate();
             }
@@ -484,11 +490,11 @@ function prsnImgContUpdate(){
 }
 function addPrsnImgLink(){
     if (prsnAddImages.length <= 0){
-        createOP("Add Image Link", ce("div", {}, [        
+        createOP("Add Image Link", ce("div", {}, [
             ce("input", {id: "tempURLIO", placeholder: "URL"}),
             ce("div", {className: "rBtn", style: "margin-top: 10px", innerText: "Add", onclick: function(){
                 let link=document.getElementById("tempURLIO").value;
-                if(link.length > 0){prsnAddImages.push({url: link, storagePath: false});prsnImgContUpdate();document.getElementById("overPage").style.display = "none";}
+                if(link.length > 0){prsnAddImages.push({url: link, bID: false});prsnImgContUpdate();document.getElementById("overPage").style.display = "none";}
             }})
         ]));
     }
@@ -497,15 +503,12 @@ function addPrsnImgFile(){
     if (prsnAddImages.length <= 0){
         ce("input", {type: "file", accept: ".png,.jpg,.jpeg,.webp", onchange: function(inputArg){
             let imgFiles = inputArg.target.files;
-            for (index in imgFiles){
-                if(typeof(imgFiles[index]) == "object"){
-                    storageRef.child(`peopleImages/${(new Date().getTime()).toString(16).toUpperCase()}${(Math.floor(Math.random() * 10000)).toString(16).toUpperCase()}_${index}`).put(imgFiles[index]).then((gsFileRef) => {
-                        gsFileRef.ref.getDownloadURL().then((url) => {
-    
-                            prsnAddImages.push({url: url, storagePath: gsFileRef.ref.fullPath});
-                            prsnImgContUpdate();
-                        
-                        });
+            for (i in imgFiles){
+                if(typeof(imgFiles[i]) == "object"){
+                    awStg.createFile("mainBucket", `prsn-${(new Date().getTime()).toString(30).toUpperCase()}${(Math.floor(Math.random() * 10000)).toString(16).toUpperCase()}_${i}`, imgFiles[i]).then((awFile)=>{
+                        let url = `${awURL}/storage/buckets/${awFile.bucketId}/files/${awFile.$id}/view?project=${awID}`;
+                        prsnAddImages.push({url: url, bID: awFile.bucketId, fID: awFile.$id});
+                        prsnImgContUpdate();
                     });
                 }
             }
@@ -515,9 +518,9 @@ function addPrsnImgFile(){
 function prsnAdd(){
     let imageUrls = [];
     let storageDependencies = [];
-    for (index in prsnAddImages){
-        imageUrls.push(prsnAddImages[index].url);
-        if (prsnAddImages[index].storagePath){storageDependencies.push(prsnAddImages[index].storagePath);}
+    for (i in prsnAddImages){
+        imageUrls.push(prsnAddImages[i].url);
+        if (prsnAddImages[i].bID){storageDependencies.push([prsnAddImages[i].bID, prsnAddImages[i].fID]);}
     }
 
     if ((prsnAddImages.length > 0) && prsnAddNameIO.value && prsnAddPostIO.value && prsnAddBodyIO.value){
@@ -563,13 +566,13 @@ function prsnDel(prsnDelID=undefined){
         db.collection("siteData").doc("people").get().then((peopleRef)=>{
             let peopleDocData = peopleRef.data();
             let hasChanged = false;
-            for (index in peopleDocData.allPeople){
-                if (peopleDocData.allPeople[index].prsnID == prsnDelIDIO){
-                    for (depIndex in peopleDocData.allPeople[index].storageDeps){
-                        storageRef.child(peopleDocData.allPeople[index].storageDeps[depIndex]).delete();
+            for (i in peopleDocData.allPeople){
+                if (peopleDocData.allPeople[i].prsnID == prsnDelIDIO){
+                    for (depIndex in peopleDocData.allPeople[i].storageDeps){
+                        awStg.deleteFile(peopleDocData.allPeople[i].storageDeps[depIndex].bID, peopleDocData.allPeople[i].storageDeps[depIndex].fID);
                     }
 
-                    peopleDocData.allPeople.splice(index, 1);
+                    peopleDocData.allPeople.splice(i, 1);
                     hasChanged = true;
                 };
             }
@@ -591,17 +594,17 @@ function pinnedPrsnAdd(){
     if(pinnedPrsnAddIDIO.value){
         db.collection("siteData").doc("people").get().then((peopleRef)=>{
             let peopleDocData=peopleRef.data();
-            for(index in peopleDocData.allPeople){
-                if(peopleDocData.allPeople[index].prsnID==pinnedPrsnAddIDIO.value){
-                    let prsnData = peopleDocData.allPeople[index];
+            for(i in peopleDocData.allPeople){
+                if(peopleDocData.allPeople[i].prsnID==pinnedPrsnAddIDIO.value){
+                    let prsnData = peopleDocData.allPeople[i];
                     db.collection("siteData").doc("common").get().then((commonRef)=>{
 
                         let commonData = commonRef.data();
                         if(commonData != undefined){
                             if ("pinnedPeople" in commonData){
-                                for (index2 in commonData.pinnedPeople){
-                                    if (commonData.pinnedPeople[index2].prsnID == pinnedPrsnAddIDIO.value){
-                                        commonData.pinnedPeople.splice(index2, 1);break;
+                                for (i2 in commonData.pinnedPeople){
+                                    if (commonData.pinnedPeople[i2].prsnID == pinnedPrsnAddIDIO.value){
+                                        commonData.pinnedPeople.splice(i2, 1);break;
                                     };
                                 }
                                 if(document.getElementById("pinnedPrsnOrderIO").value=="front"){
@@ -638,9 +641,9 @@ function pinnedPrsnDel(pinnedPrsnDelID=undefined){
         db.collection("siteData").doc("common").get().then((commonRef)=>{
             let commonData = commonRef.data();
             let hasChanged = false;
-            for (index in commonData.pinnedPeople){
-                if (commonData.pinnedPeople[index].prsnID == pinnedPrsnDelIDIO){
-                    commonData.pinnedPeople.splice(index, 1);
+            for (i in commonData.pinnedPeople){
+                if (commonData.pinnedPeople[i].prsnID == pinnedPrsnDelIDIO){
+                    commonData.pinnedPeople.splice(i, 1);
                     hasChanged = true;
                 };
             }
@@ -681,26 +684,26 @@ function navUpdater(){
     rSectNavItemCont.innerHTML = "";
     
     let hasLogo = false;
-    for (index in tempNavData){if (tempNavData[index].logo){hasLogo = true;}}
+    for (i in tempNavData){if (tempNavData[i].logo){hasLogo = true;}}
     if (hasLogo==false){tempNavData.unshift({logo: true, src: "/logo.png"});}
 
-    for (index1 in tempNavData){
+    for (i1 in tempNavData){
         let rSectNavFtrItemData;
-        if (tempNavData[index1].logo){ //Logo
+        if (tempNavData[i1].logo){ //Logo
             rSectNavFtrItemData = ce("div", {className: "rSectNavFtrItemData"}, [
                 ce("span", {className: "rBtn"}, [matSym("arrow_upward", {
                     onclick: function(){
-                        tempNavData.splice(this.parentNode.parentNode.parentNode.index1-1, 0, tempNavData.splice(this.parentNode.parentNode.parentNode.index1, 1)[0]);navUpdater();
+                        tempNavData.splice(this.parentNode.parentNode.parentNode.i1-1, 0, tempNavData.splice(this.parentNode.parentNode.parentNode.i1, 1)[0]);navUpdater();
                     }
                 })]),
                 ce("span", {className: "rBtn"}, [matSym("arrow_downward", {
                     onclick: function(){
-                        tempNavData.splice(this.parentNode.parentNode.parentNode.index1+1, 0, tempNavData.splice(this.parentNode.parentNode.parentNode.index1, 1)[0]);navUpdater();
+                        tempNavData.splice(this.parentNode.parentNode.parentNode.i1+1, 0, tempNavData.splice(this.parentNode.parentNode.parentNode.i1, 1)[0]);navUpdater();
                     }
                 })]),
                 ce("span", {className: "rBtn"}, [matSym("edit", {
                     onclick: function(){
-                        let editingIndex1 = this.parentNode.parentNode.parentNode.index1;
+                        let editingIndex1 = this.parentNode.parentNode.parentNode.i1;
                         createOP("Edit", ce("div", {style: "display:flex;flex-direction:column;"}, [
                             ce("input", {id: "navItemLinkIO", placeholder: "Image URL", value: tempNavData[editingIndex1].src}),
                             ce("div", {className: "rBtn", style: "margin-top: 10px;border-color: var(--color10);color: var(--color10);", innerText: "Save", onclick: function(){
@@ -715,25 +718,25 @@ function navUpdater(){
                     }
                 })]),
                 ce("span", {className: "rSectNavFtrItemText"}, ["Logo"]),
-                ce("span", {className: "rSectNavFtrItemLink"}, [tempNavData[index1].src])
+                ce("span", {className: "rSectNavFtrItemLink"}, [tempNavData[i1].src])
             ]);
         }else{ //Items
             rSectNavFtrItemData = ce("div", {className: "rSectNavFtrItemData"}, [
                 ce("span", {className: "rBtn"}, [matSym("arrow_upward", {
                     onclick: function(){
-                        tempNavData.splice(this.parentNode.parentNode.parentNode.index1-1, 0, tempNavData.splice(this.parentNode.parentNode.parentNode.index1, 1)[0]);
+                        tempNavData.splice(this.parentNode.parentNode.parentNode.i1-1, 0, tempNavData.splice(this.parentNode.parentNode.parentNode.i1, 1)[0]);
                         navUpdater();
                     }
                 })]),
                 ce("span", {className: "rBtn"}, [matSym("arrow_downward", {
                     onclick: function(){
-                        tempNavData.splice(this.parentNode.parentNode.parentNode.index1+1, 0, tempNavData.splice(this.parentNode.parentNode.parentNode.index1, 1)[0]);
+                        tempNavData.splice(this.parentNode.parentNode.parentNode.i1+1, 0, tempNavData.splice(this.parentNode.parentNode.parentNode.i1, 1)[0]);
                         navUpdater();
                     }
                 })]),
                 ce("span", {className: "rBtn"}, [matSym("edit", {
                     onclick: function(){
-                        let editingIndex1 = this.parentNode.parentNode.parentNode.index1;
+                        let editingIndex1 = this.parentNode.parentNode.parentNode.i1;
                         createOP("Edit", ce("div", {style: "display:flex;flex-direction:column;"}, [
                             ce("input", {id: "navItemTextIO", placeholder: "Text", value: tempNavData[editingIndex1].text}),
                             ce("input", {id: "navItemLinkIO", placeholder: "Link", value: tempNavData[editingIndex1].link, style: "margin-top: 10px"}),
@@ -757,7 +760,7 @@ function navUpdater(){
                 })]),
                 ce("span", {className: "rBtn"}, [matSym("add", {
                     onclick: function(){
-                        let editingIndex1 = this.parentNode.parentNode.parentNode.index1;
+                        let editingIndex1 = this.parentNode.parentNode.parentNode.i1;
                         createOP("Add Nav SubItem", ce("div", {style: "display:flex;flex-direction:column;"}, [
                             ce("input", {id: "navItemTextIO", placeholder: "Text"}),
                             ce("input", {id: "navItemLinkIO", placeholder: "Link", style: "margin-top: 10px"}),
@@ -774,32 +777,32 @@ function navUpdater(){
                         ]));
                     }
                 })]),
-                ce("span", {className: "rSectNavFtrItemText"}, [tempNavData[index1].text]),
-                ce("span", {className: "rSectNavFtrItemLink"}, [tempNavData[index1].link])
+                ce("span", {className: "rSectNavFtrItemText"}, [tempNavData[i1].text]),
+                ce("span", {className: "rSectNavFtrItemLink"}, [tempNavData[i1].link])
             ]);
         }
         let rSectNavFtrSubItemCont = ce("div", {className: "rSectNavFtrSubItemCont"})
-        if ("subOpts" in tempNavData[index1]){ //Sub Items
-            for (index2 in tempNavData[index1]["subOpts"]){
-                rSectNavFtrSubItemCont.append(ce("div", {className: "rSectNavFtrSubItem", index2: index2}, [
+        if ("subOpts" in tempNavData[i1]){ //Sub Items
+            for (i2 in tempNavData[i1]["subOpts"]){
+                rSectNavFtrSubItemCont.append(ce("div", {className: "rSectNavFtrSubItem", i2: i2}, [
                     ce("span", {className: "rBtn"}, [matSym("arrow_upward", {
                         onclick: function(){
-                            tempNavData[this.parentNode.parentNode.parentNode.parentNode.index1].subOpts
-                                .splice(this.parentNode.parentNode.index2-1, 0, tempNavData[this.parentNode.parentNode.parentNode.parentNode.index1].subOpts.splice(this.parentNode.parentNode.index2, 1)[0]);
+                            tempNavData[this.parentNode.parentNode.parentNode.parentNode.i1].subOpts
+                                .splice(this.parentNode.parentNode.i2-1, 0, tempNavData[this.parentNode.parentNode.parentNode.parentNode.i1].subOpts.splice(this.parentNode.parentNode.i2, 1)[0]);
                             navUpdater();
                         }
                     })]),
                     ce("span", {className: "rBtn"}, [matSym("arrow_downward", {
                         onclick: function(){
-                            tempNavData[this.parentNode.parentNode.parentNode.parentNode.index1].subOpts
-                                .splice(this.parentNode.parentNode.index2-1, 0, tempNavData[this.parentNode.parentNode.parentNode.parentNode.index1].subOpts.splice(this.parentNode.parentNode.index2, 1)[0]);
+                            tempNavData[this.parentNode.parentNode.parentNode.parentNode.i1].subOpts
+                                .splice(this.parentNode.parentNode.i2-1, 0, tempNavData[this.parentNode.parentNode.parentNode.parentNode.i1].subOpts.splice(this.parentNode.parentNode.i2, 1)[0]);
                             navUpdater();
                         }
                     })]),
                     ce("span", {className: "rBtn"}, [matSym("edit", {
                         onclick: function(){
-                            let editingIndex1 = this.parentNode.parentNode.parentNode.parentNode.index1;
-                            let editingIndex2 = this.parentNode.parentNode.index2;
+                            let editingIndex1 = this.parentNode.parentNode.parentNode.parentNode.i1;
+                            let editingIndex2 = this.parentNode.parentNode.i2;
                             createOP("Edit", ce("div", {style: "display:flex;flex-direction:column;"}, [
                                 ce("input", {id: "navItemTextIO", placeholder: "Text", value: tempNavData[editingIndex1].subOpts[editingIndex2].text}),
                                 ce("input", {id: "navItemLinkIO", placeholder: "Link", value: tempNavData[editingIndex1].subOpts[editingIndex2].link, style: "margin-top: 10px"}),
@@ -822,13 +825,13 @@ function navUpdater(){
                             ]));
                         }
                     })]),
-                    ce("span", {className: "rSectNavFtrSubItemText"}, [tempNavData[index1]["subOpts"][index2].text]),
-                    ce("span", {className: "rSectNavFtrSubItemLink"}, [tempNavData[index1]["subOpts"][index2].link])
+                    ce("span", {className: "rSectNavFtrSubItemText"}, [tempNavData[i1]["subOpts"][i2].text]),
+                    ce("span", {className: "rSectNavFtrSubItemLink"}, [tempNavData[i1]["subOpts"][i2].link])
                 ]));
             }
         }
         
-        rSectNavItemCont.append(ce("div", {className: "rSectNavFtrItem", index1: index1}, [
+        rSectNavItemCont.append(ce("div", {className: "rSectNavFtrItem", i1: i1}, [
             rSectNavFtrItemData,
             rSectNavFtrSubItemCont
         ]))
@@ -874,35 +877,35 @@ let rSectFtrItemCont = document.getElementById("rSectFtrItemCont");
 function ftrUpdater(){
     rSectFtrItemCont.innerHTML = "";
 
-    for (index1 in tempFtrData){
+    for (i1 in tempFtrData){
 
         let rSectNavFtrSubItemCont = ce("div", {className: "rSectNavFtrSubItemCont"})
-        if ("subOpts" in tempFtrData[index1]){ //Sub Items
-            for (index2 in tempFtrData[index1]["subOpts"]){
+        if ("subOpts" in tempFtrData[i1]){ //Sub Items
+            for (i2 in tempFtrData[i1]["subOpts"]){
 
                 let rSectFtrSubItemLogoIconChild="";
-                if(tempFtrData[index1]["subOpts"][index2].matSym){rSectFtrSubItemLogoIconChild = matSym(tempFtrData[index1]["subOpts"][index2].matSym || "link_off")}
-                else if(tempFtrData[index1]["subOpts"][index2].iconUrl){rSectFtrSubItemLogoIconChild = ce("img", {src: tempFtrData[index1]["subOpts"][index2].iconUrl || ""});}
+                if(tempFtrData[i1]["subOpts"][i2].matSym){rSectFtrSubItemLogoIconChild = matSym(tempFtrData[i1]["subOpts"][i2].matSym || "link_off")}
+                else if(tempFtrData[i1]["subOpts"][i2].iconUrl){rSectFtrSubItemLogoIconChild = ce("img", {src: tempFtrData[i1]["subOpts"][i2].iconUrl || ""});}
 
-                rSectNavFtrSubItemCont.append(ce("div", {className: "rSectNavFtrSubItem", index2: index2}, [
+                rSectNavFtrSubItemCont.append(ce("div", {className: "rSectNavFtrSubItem", i2: i2}, [
                     ce("span", {className: "rBtn"}, [matSym("arrow_upward", {
                         onclick: function(){
-                            tempFtrData[this.parentNode.parentNode.parentNode.parentNode.index1].subOpts
-                                .splice(this.parentNode.parentNode.index2-1, 0, tempFtrData[this.parentNode.parentNode.parentNode.parentNode.index1].subOpts.splice(this.parentNode.parentNode.index2, 1)[0]);
+                            tempFtrData[this.parentNode.parentNode.parentNode.parentNode.i1].subOpts
+                                .splice(this.parentNode.parentNode.i2-1, 0, tempFtrData[this.parentNode.parentNode.parentNode.parentNode.i1].subOpts.splice(this.parentNode.parentNode.i2, 1)[0]);
                             ftrUpdater();
                         }
                     })]),
                     ce("span", {className: "rBtn"}, [matSym("arrow_downward", {
                         onclick: function(){
-                            tempFtrData[this.parentNode.parentNode.parentNode.parentNode.index1].subOpts
-                                .splice(this.parentNode.parentNode.index2-1, 0, tempFtrData[this.parentNode.parentNode.parentNode.parentNode.index1].subOpts.splice(this.parentNode.parentNode.index2, 1)[0]);
+                            tempFtrData[this.parentNode.parentNode.parentNode.parentNode.i1].subOpts
+                                .splice(this.parentNode.parentNode.i2-1, 0, tempFtrData[this.parentNode.parentNode.parentNode.parentNode.i1].subOpts.splice(this.parentNode.parentNode.i2, 1)[0]);
                             ftrUpdater();
                         }
                     })]),
                     ce("span", {className: "rBtn"}, [matSym("edit", {
                         onclick: function(){
-                            let editingIndex1 = this.parentNode.parentNode.parentNode.parentNode.index1;
-                            let editingIndex2 = this.parentNode.parentNode.index2;
+                            let editingIndex1 = this.parentNode.parentNode.parentNode.parentNode.i1;
+                            let editingIndex2 = this.parentNode.parentNode.i2;
                             createOP("Edit", ce("div", {style: "display:flex;flex-direction:column;"}, [
                                 ce("input", {id: "ftrItemMatSymIO", placeholder: "MatSym (More priority)", value: tempFtrData[editingIndex1].subOpts[editingIndex2].matSym || ""}),
                                 ce("input", {id: "ftrItemIconLinkIO", placeholder: "Icon (Less priority)", value: tempFtrData[editingIndex1].subOpts[editingIndex2].iconUrl || "", style: "margin-top: 10px"}),
@@ -940,34 +943,34 @@ function ftrUpdater(){
                         }
                     })]),
                     ce("span", {className: "rSectFtrItemLogoIcon"}, [rSectFtrSubItemLogoIconChild]),
-                    ce("span", {className: "rSectNavFtrSubItemText"}, [tempFtrData[index1]["subOpts"][index2].text]),
-                    ce("span", {className: "rSectNavFtrSubItemLink"}, [tempFtrData[index1]["subOpts"][index2].link]),
+                    ce("span", {className: "rSectNavFtrSubItemText"}, [tempFtrData[i1]["subOpts"][i2].text]),
+                    ce("span", {className: "rSectNavFtrSubItemLink"}, [tempFtrData[i1]["subOpts"][i2].link]),
                 ]))
             }
         }
 
 
         let rSectFtrItemLogoIconChild="";
-        if(tempFtrData[index1].matSym){rSectFtrItemLogoIconChild = matSym(tempFtrData[index1].matSym || "link_off")}
-        else if(tempFtrData[index1].iconUrl){rSectFtrItemLogoIconChild = ce("img", {src: tempFtrData[index1].iconUrl || ""});}
+        if(tempFtrData[i1].matSym){rSectFtrItemLogoIconChild = matSym(tempFtrData[i1].matSym || "link_off")}
+        else if(tempFtrData[i1].iconUrl){rSectFtrItemLogoIconChild = ce("img", {src: tempFtrData[i1].iconUrl || ""});}
 
-        rSectFtrItemCont.append(ce("div", {className: "rSectNavFtrItem", index1: index1}, [
+        rSectFtrItemCont.append(ce("div", {className: "rSectNavFtrItem", i1: i1}, [
             ce("div", {className: "rSectNavFtrItemData"}, [
                 ce("span", {className: "rBtn"}, [matSym("arrow_upward", {
                     onclick: function(){
-                        tempFtrData.splice(this.parentNode.parentNode.parentNode.index1-1, 0, tempFtrData.splice(this.parentNode.parentNode.parentNode.index1, 1)[0]);
+                        tempFtrData.splice(this.parentNode.parentNode.parentNode.i1-1, 0, tempFtrData.splice(this.parentNode.parentNode.parentNode.i1, 1)[0]);
                         ftrUpdater();
                     }
                 })]),
                 ce("span", {className: "rBtn"}, [matSym("arrow_downward", {
                     onclick: function(){
-                        tempFtrData.splice(this.parentNode.parentNode.parentNode.index1+1, 0, tempFtrData.splice(this.parentNode.parentNode.parentNode.index1, 1)[0]);
+                        tempFtrData.splice(this.parentNode.parentNode.parentNode.i1+1, 0, tempFtrData.splice(this.parentNode.parentNode.parentNode.i1, 1)[0]);
                         ftrUpdater();
                     }
                 })]),
                 ce("span", {className: "rBtn"}, [matSym("edit", {
                     onclick: function(){
-                        let editingIndex1 = this.parentNode.parentNode.parentNode.index1;
+                        let editingIndex1 = this.parentNode.parentNode.parentNode.i1;
                         createOP("Edit", ce("div", {style: "display:flex;flex-direction:column;"}, [
                             ce("input", {id: "ftrItemMatSymIO", placeholder: "MatSym (More priority)", value: tempFtrData[editingIndex1].matSym || ""}),
                             ce("input", {id: "ftrItemIconLinkIO", placeholder: "Icon (Less priority)", value: tempFtrData[editingIndex1].iconUrl || "", style: "margin-top: 10px"}),
@@ -1004,7 +1007,7 @@ function ftrUpdater(){
                 })]),
                 ce("span", {className: "rBtn"}, [matSym("add", {
                     onclick: function(){
-                        let editingIndex1 = this.parentNode.parentNode.parentNode.index1;
+                        let editingIndex1 = this.parentNode.parentNode.parentNode.i1;
                         createOP("Add Ftr SubItem", ce("div", {style: "display:flex;flex-direction:column;"}, [
                             ce("input", {id: "ftrItemMatSymIO", placeholder: "MatSym (More priority)"}),
                             ce("input", {id: "ftrItemIconLinkIO", placeholder: "Icon (Less priority)", style: "margin-top: 10px"}),
@@ -1043,7 +1046,7 @@ function ftrUpdater(){
                     }
                 })]),
                 ce("span", {className: "rSectFtrItemLogoIcon"}, [rSectFtrItemLogoIconChild]),
-                ce("span", {className: "rSectNavFtrItemText"}, [tempFtrData[index1].text])
+                ce("span", {className: "rSectNavFtrItemText"}, [tempFtrData[i1].text])
             ]),
             rSectNavFtrSubItemCont
         ]))
