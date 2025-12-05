@@ -126,7 +126,7 @@ function artclPost(){
     let storageDependencies = [];
     for (i in artclImages){
         imageUrls.push(artclImages[i].url);
-        if (artclImages[i].bID){storageDependencies.push([artclImages[i].bID, artclImages[i].fID]);}
+        if (artclImages[i].bID){storageDependencies.push({bID: artclImages[i].bID, fID: artclImages[i].fID});}
     }
 
     let artclData = {
@@ -327,7 +327,7 @@ function photoAdd(){
     let storageDependencies = [];
     for (i in addPhotosImages){
         imageUrls.push(addPhotosImages[i].url);
-        if (addPhotosImages[i].bID){storageDependencies.push([addPhotosImages[i].bID, addPhotosImages[i].fID]);}
+        if (addPhotosImages[i].bID){storageDependencies.push({bID: addPhotosImages[i].bID, fID: addPhotosImages[i].fID});}
     }
 
     if (addPhotosImages.length > 0){
@@ -520,7 +520,7 @@ function prsnAdd(){
     let storageDependencies = [];
     for (i in prsnAddImages){
         imageUrls.push(prsnAddImages[i].url);
-        if (prsnAddImages[i].bID){storageDependencies.push([prsnAddImages[i].bID, prsnAddImages[i].fID]);}
+        if (prsnAddImages[i].bID){storageDependencies.push({bID: prsnAddImages[i].bID, fID: prsnAddImages[i].fID});}
     }
 
     if ((prsnAddImages.length > 0) && prsnAddNameIO.value && prsnAddPostIO.value && prsnAddBodyIO.value){
